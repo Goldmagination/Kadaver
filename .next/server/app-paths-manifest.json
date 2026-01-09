@@ -1,7 +1,7 @@
 {
-  "/api/poems/route": "app/api/poems/route.js",
-  "/[locale]/poems/page": "app/[locale]/poems/page.js",
   "/[locale]/page": "app/[locale]/page.js",
+  "/[locale]/poems/page": "app/[locale]/poems/page.js",
   "/[locale]/admin/page": "app/[locale]/admin/page.js",
-  "/[locale]/poems/[slug]/page": "app/[locale]/poems/[slug]/page.js"
+  "/[locale]/poets/page": "app/[locale]/poets/page.js",
+  "/[locale]/about/page": "app/[locale]/about/page.js"
 }

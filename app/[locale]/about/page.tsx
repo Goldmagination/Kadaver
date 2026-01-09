@@ -29,8 +29,8 @@ const content = {
         content: 'Kadaver ist offen für alle, die ihre Stimme teilen möchten. Ob etablierter Autor oder aufstrebender Poet – hier finden Ihre Worte ein Zuhause. Reichen Sie Ihre Gedichte ein und werden Sie Teil unserer wachsenden Gemeinschaft.'
       }
     ],
-    quote: 'Die Poesie ist die Muttersprache des menschlichen Geschlechts.',
-    quoteAuthor: '— Johann Georg Hamann'
+    quote: 'block block block ich bin Schriftsteller Blok.',
+    quoteAuthor: '— Dmitry Korolyov'
   },
   en: {
     title: 'About Kadaver',
@@ -50,8 +50,8 @@ const content = {
         content: 'Kadaver is open to all who wish to share their voice. Whether established author or emerging poet – your words find a home here. Submit your poems and become part of our growing community.'
       }
     ],
-    quote: 'Poetry is the mother tongue of the human race.',
-    quoteAuthor: '— Johann Georg Hamann'
+    quote: 'block block block I am writer Blok.',
+    quoteAuthor: '— Dmitry Korolyov'
   },
   ru: {
     title: 'О Кадавере',
@@ -71,8 +71,8 @@ const content = {
         content: 'Кадавер открыт для всех, кто хочет поделиться своим голосом. Признанный автор или начинающий поэт — ваши слова найдут здесь дом. Присылайте свои стихи и станьте частью нашего растущего сообщества.'
       }
     ],
-    quote: 'Поэзия — родной язык человеческого рода.',
-    quoteAuthor: '— Иоганн Георг Гаман'
+    quote: 'Блок-блок-блок-блок-блок. Я писатель Блок.',
+    quoteAuthor: '— Дмитрий Королёв'
   }
 }
 
