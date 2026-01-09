@@ -1,0 +1,272 @@
+// Kadaver Poetry Society - Database Schema
+// A sanctuary for poetry in three tongues
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// LANGUAGE ENUM
+// ============================================
+
+enum Language {
+  de // German
+  en // English
+  ru // Russian
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+enum UserRole {
+  READER     // Can read and like poems
+  POET       // Can submit poems
+  EDITOR     // Can approve submissions
+  ADMIN      // Full access
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  displayName   String?
+  avatarUrl     String?
+  bio           String?   @db.Text
+  role          UserRole  @default(READER)
+
+  // Supabase Auth ID for integration
+  supabaseId    String?   @unique
+
+  // Relations
+  submissions   Submission[]
+  favorites     Favorite[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+  @@index([supabaseId])
+}
+
+// ============================================
+// POET (Authors of poems)
+// ============================================
+
+model Poet {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+
+  // Multilingual name support
+  name          String
+  nameOriginal  String?   // Name in original script (e.g., Cyrillic)
+
+  // Biographical info
+  bio           String?   @db.Text
+  bioRu         String?   @db.Text
+  bioDe         String?   @db.Text
+  bioEn         String?   @db.Text
+
+  portraitUrl   String?
+  birthYear     Int?
+  deathYear     Int?
+  nationality   String?
+
+  // Languages the poet writes in
+  languages     Language[]
+
+  // External links
+  wikipediaUrl  String?
+  websiteUrl    String?
+
+  // Relations
+  poems         Poem[]
+
+  // Metadata
+  featured      Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([featured])
+}
+
+// ============================================
+// TAG (Categories for poems)
+// ============================================
+
+model Tag {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+
+  // Multilingual names
+  nameEn        String
+  nameDe        String
+  nameRu        String
+
+  // Tag metadata
+  description   String?   @db.Text
+  color         String?   // Hex color for UI
+
+  // Relations
+  poems         PoemTag[]
+
+  createdAt     DateTime  @default(now())
+
+  @@index([slug])
+}
+
+// ============================================
+// POEM (The heart of Kadaver)
+// ============================================
+
+model Poem {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+
+  // Content
+  title         String
+  content       String    @db.Text
+  excerpt       String?   @db.Text
+
+  // Language of the poem
+  language      Language
+
+  // Author
+  poetId        String
+  poet          Poet      @relation(fields: [poetId], references: [id], onDelete: Cascade)
+
+  // Audio recording
+  audioUrl      String?
+  audioDuration Int?      // Duration in seconds
+  audioReader   String?   // Who recorded the audio
+
+  // Publishing
+  published     Boolean   @default(false)
+  featured      Boolean   @default(false)
+  publishedAt   DateTime?
+
+  // Analytics
+  viewCount     Int       @default(0)
+
+  // Source/Attribution
+  source        String?   // Book, collection, etc.
+  year          Int?      // Year written/published
+
+  // Relations
+  tags          PoemTag[]
+  favorites     Favorite[]
+
+  // Metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([language])
+  @@index([poetId])
+  @@index([published, featured])
+  @@index([publishedAt])
+}
+
+// ============================================
+// POEM-TAG RELATION (Many-to-Many)
+// ============================================
+
+model PoemTag {
+  poemId        String
+  tagId         String
+
+  poem          Poem      @relation(fields: [poemId], references: [id], onDelete: Cascade)
+  tag           Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  assignedAt    DateTime  @default(now())
+
+  @@id([poemId, tagId])
+  @@index([poemId])
+  @@index([tagId])
+}
+
+// ============================================
+// FAVORITE (User's saved poems)
+// ============================================
+
+model Favorite {
+  userId        String
+  poemId        String
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poem          Poem      @relation(fields: [poemId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+
+  @@id([userId, poemId])
+  @@index([userId])
+  @@index([poemId])
+}
+
+// ============================================
+// SUBMISSION (User-submitted poems)
+// ============================================
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Submission {
+  id            String           @id @default(cuid())
+
+  // Submitted content
+  title         String
+  content       String           @db.Text
+  authorName    String           // Can be different from poet name
+  language      Language
+
+  // Optional audio
+  audioUrl      String?
+
+  // Submitter
+  submitterId   String
+  submitter     User             @relation(fields: [submitterId], references: [id], onDelete: Cascade)
+
+  // Review status
+  status        SubmissionStatus @default(PENDING)
+  reviewNotes   String?          @db.Text
+  reviewedAt    DateTime?
+
+  // If approved, link to created poem
+  approvedPoemId String?
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([submitterId])
+  @@index([status])
+}
+
+// ============================================
+// SITE SETTINGS (For admin configuration)
+// ============================================
+
+model SiteSettings {
+  id            String    @id @default("default")
+
+  // Featured content
+  heroQuoteEn   String?   @db.Text
+  heroQuoteDe   String?   @db.Text
+  heroQuoteRu   String?   @db.Text
+  heroAuthor    String?
+
+  // Analytics
+  totalViews    Int       @default(0)
+
+  updatedAt     DateTime  @updatedAt
+}
