@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { getDictionary } from '@/lib/dictionary'
 import type { Locale } from '@/i18n.config'
-import '../globals.css'
 
 export async function generateMetadata({
   params: { locale }
@@ -26,19 +25,9 @@ export async function generateMetadata({
 
 export default function LocaleLayout({
   children,
-  params: { locale }
 }: {
   children: React.ReactNode
   params: { locale: Locale }
 }) {
-  return (
-    <html lang={locale} className="scroll-smooth-custom">
-      <body className="min-h-screen relative">
-        <div className="noise-overlay" />
-        <div className="paper-texture min-h-screen">
-          {children}
-        </div>
-      </body>
-    </html>
-  )
+  return <>{children}</>
 }
