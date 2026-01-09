@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+async function getOrCreateAnonymousUser(email: string) {
+  // Try to find existing user by email
+  let user = await prisma.user.findUnique({
+    where: { email }
+  })
+
+  // If not found, create a new user
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email,
+        role: 'POET',
+      }
+    })
+  }
+
+  return user
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -22,20 +41,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if we have a database connection
-    // If not, store in a simple way or return success for demo
     try {
-      // Try to create a submission in the database
+      // Get or create user by email
+      const user = await getOrCreateAnonymousUser(email)
+
+      // Create the submission
       const submission = await prisma.submission.create({
         data: {
           title,
           authorName: author,
-          language: language.toUpperCase() as 'DE' | 'EN' | 'RU',
+          language: language.toLowerCase() as 'de' | 'en' | 'ru',
           content,
-          submitterId: 'anonymous', // For now, anonymous submissions
+          submitterId: user.id,
           status: 'PENDING',
         },
       })
+
+      console.log('Submission created:', submission.id)
 
       return NextResponse.json(
         {
@@ -46,22 +68,10 @@ export async function POST(request: NextRequest) {
         { status: 201 }
       )
     } catch (dbError) {
-      // If database is not available, log and return success anyway for demo
-      console.log('Database not available, submission logged:', {
-        title,
-        author,
-        language,
-        email,
-        contentPreview: content.substring(0, 100),
-        tags
-      })
-
+      console.error('Database error:', dbError)
       return NextResponse.json(
-        {
-          success: true,
-          message: 'Poem submitted successfully (demo mode)',
-        },
-        { status: 201 }
+        { error: 'Failed to save submission to database' },
+        { status: 500 }
       )
     }
   } catch (error) {

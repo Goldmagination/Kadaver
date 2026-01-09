@@ -1,8 +1,7 @@
 {
-  "/api/submit/route": "app/api/submit/route.js",
-  "/[locale]/about/page": "app/[locale]/about/page.js",
+  "/api/poems/route": "app/api/poems/route.js",
   "/[locale]/poems/page": "app/[locale]/poems/page.js",
-  "/[locale]/poets/page": "app/[locale]/poets/page.js",
-  "/[locale]/submit/page": "app/[locale]/submit/page.js",
-  "/[locale]/page": "app/[locale]/page.js"
+  "/[locale]/page": "app/[locale]/page.js",
+  "/[locale]/admin/page": "app/[locale]/admin/page.js",
+  "/[locale]/poems/[slug]/page": "app/[locale]/poems/[slug]/page.js"
 }

@@ -11,62 +11,25 @@ interface PoemsPageProps {
   params: { locale: Locale }
 }
 
-const samplePoems = [
-  {
-    id: '1',
-    slug: 'der-panther',
-    title: 'Der Panther',
-    author: 'Rainer Maria Rilke',
-    language: 'de',
-    excerpt: 'Sein Blick ist vom Vorübergehn der Stäbe\nso müd geworden, dass er nichts mehr hält.\nIhm ist, als ob es tausend Stäbe gäbe\nund hinter tausend Stäben keine Welt.',
-    tags: ['nature', 'freedom', 'silence'],
-  },
-  {
-    id: '2',
-    slug: 'the-road-not-taken',
-    title: 'The Road Not Taken',
-    author: 'Robert Frost',
-    language: 'en',
-    excerpt: 'Two roads diverged in a yellow wood,\nAnd sorry I could not travel both\nAnd be one traveler, long I stood\nAnd looked down one as far as I could',
-    tags: ['choice', 'journey', 'time'],
-  },
-  {
-    id: '3',
-    slug: 'ya-vas-lyubil',
-    title: 'Я вас любил',
-    author: 'Александр Пушкин',
-    language: 'ru',
-    excerpt: 'Я вас любил: любовь еще, быть может,\nВ душе моей угасла не совсем;\nНо пусть она вас больше не тревожит;\nЯ не хочу печалить вас ничем.',
-    tags: ['love', 'memory', 'time'],
-  },
-  {
-    id: '4',
-    slug: 'erlkoenig',
-    title: 'Erlkönig',
-    author: 'Johann Wolfgang von Goethe',
-    language: 'de',
-    excerpt: 'Wer reitet so spät durch Nacht und Wind?\nEs ist der Vater mit seinem Kind;\nEr hat den Knaben wohl in dem Arm,\nEr fasst ihn sicher, er hält ihn warm.',
-    tags: ['death', 'nature', 'fear'],
-  },
-  {
-    id: '5',
-    slug: 'the-raven',
-    title: 'The Raven',
-    author: 'Edgar Allan Poe',
-    language: 'en',
-    excerpt: 'Once upon a midnight dreary, while I pondered, weak and weary,\nOver many a quaint and curious volume of forgotten lore—\nWhile I nodded, nearly napping, suddenly there came a tapping,\nAs of some one gently rapping, rapping at my chamber door.',
-    tags: ['death', 'memory', 'dream'],
-  },
-  {
-    id: '6',
-    slug: 'zimneye-utro',
-    title: 'Зимнее утро',
-    author: 'Александр Пушкин',
-    language: 'ru',
-    excerpt: 'Мороз и солнце; день чудесный!\nЕще ты дремлешь, друг прелестный —\nПора, красавица, проснись:\nОткрой сомкнуты негой взоры',
-    tags: ['nature', 'love', 'time'],
-  },
-]
+interface Poem {
+  id: string
+  slug: string
+  title: string
+  content: string
+  excerpt: string | null
+  language: string
+  poet: {
+    name: string
+  }
+  tags: Array<{
+    tag: {
+      slug: string
+      nameEn: string
+      nameDe: string
+      nameRu: string
+    }
+  }>
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,17 +50,28 @@ const itemVariants = {
 
 export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
   const [dictionary, setDictionary] = useState<any>(null)
+  const [poems, setPoems] = useState<Poem[]>([])
   const [filter, setFilter] = useState<'all' | 'de' | 'en' | 'ru'>('all')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     import(`@/lib/translations/${locale}.json`).then((mod) => {
       setDictionary(mod.default)
     })
+
+    // Fetch poems from API
+    fetch('/api/poems')
+      .then(res => res.json())
+      .then(data => {
+        setPoems(data.poems || [])
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }, [locale])
 
   const filteredPoems = filter === 'all'
-    ? samplePoems
-    : samplePoems.filter(poem => poem.language === filter)
+    ? poems
+    : poems.filter(poem => poem.language === filter)
 
   const pageTitle = {
     de: 'Alle Gedichte',
@@ -192,60 +166,82 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
       {/* Poems Grid */}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            key={filter}
-          >
-            {filteredPoems.map((poem) => (
-              <motion.article
-                key={poem.id}
-                variants={itemVariants}
-                className="group"
-              >
-                <Link href={`/${locale}/poems/${poem.slug}`}>
-                  <motion.div
-                    className="brutalist-border p-8 bg-paper hover:bg-gold-leaf/5 transition-all duration-300 h-full"
-                    whileHover={{ y: -5, boxShadow: '8px 8px 0 var(--ink-black)' }}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
-                        {poem.title}
-                      </h3>
-                      <span className="text-xs font-mono text-ink-black/50 uppercase">
-                        {poem.language}
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-ink-black/70 mb-4">
-                      {dictionary.poems.by} {poem.author}
-                    </p>
-
-                    <pre className="font-serif text-ink-black/90 mb-6 whitespace-pre-wrap text-sm leading-relaxed">
-                      {poem.excerpt}
-                    </pre>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {poem.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 text-xs font-sans bg-ink-black/10 text-ink-black"
-                        >
-                          #{dictionary.poems.tags[tag] || tag}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="text-ink-black/50 font-serif text-xl">Loading poems...</div>
+            </div>
+          ) : filteredPoems.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-ink-black/60 font-serif text-xl italic mb-4">
+                {locale === 'de' && 'Noch keine Gedichte veröffentlicht.'}
+                {locale === 'en' && 'No poems published yet.'}
+                {locale === 'ru' && 'Стихи пока не опубликованы.'}
+              </p>
+              <p className="text-ink-black/40 font-sans">
+                {locale === 'de' && 'Reichen Sie Ihre Poesie ein!'}
+                {locale === 'en' && 'Submit your poetry!'}
+                {locale === 'ru' && 'Присылайте свои стихи!'}
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              key={filter}
+            >
+              {filteredPoems.map((poem) => (
+                <motion.article
+                  key={poem.id}
+                  variants={itemVariants}
+                  className="group"
+                >
+                  <Link href={`/${locale}/poems/${poem.slug}`}>
+                    <motion.div
+                      className="brutalist-border p-8 bg-paper hover:bg-gold-leaf/5 transition-all duration-300 h-full"
+                      whileHover={{ y: -5, boxShadow: '8px 8px 0 var(--ink-black)' }}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
+                          {poem.title}
+                        </h3>
+                        <span className="text-xs font-mono text-ink-black/50 uppercase">
+                          {poem.language}
                         </span>
-                      ))}
-                    </div>
+                      </div>
 
-                    <span className="inline-block text-sm font-medium text-blood-red group-hover:text-ink-black transition-colors">
-                      {dictionary.poems.readMore} →
-                    </span>
-                  </motion.div>
-                </Link>
-              </motion.article>
-            ))}
-          </motion.div>
+                      <p className="text-sm text-ink-black/70 mb-4">
+                        {dictionary.poems.by} {poem.poet.name}
+                      </p>
+
+                      <pre className="font-serif text-ink-black/90 mb-6 whitespace-pre-wrap text-sm leading-relaxed">
+                        {(poem.excerpt || poem.content).substring(0, 200)}
+                        {(poem.excerpt || poem.content).length > 200 ? '...' : ''}
+                      </pre>
+
+                      {poem.tags && poem.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {poem.tags.map((t) => (
+                            <span
+                              key={t.tag.slug}
+                              className="px-2 py-1 text-xs font-sans bg-ink-black/10 text-ink-black"
+                            >
+                              #{locale === 'de' ? t.tag.nameDe : locale === 'ru' ? t.tag.nameRu : t.tag.nameEn}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <span className="inline-block text-sm font-medium text-blood-red group-hover:text-ink-black transition-colors">
+                        {dictionary.poems.readMore} →
+                      </span>
+                    </motion.div>
+                  </Link>
+                </motion.article>
+              ))}
+            </motion.div>
+          )}
         </div>
       </section>
 

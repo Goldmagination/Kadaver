@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import type { Locale } from '@/i18n.config'
 import Link from 'next/link'
@@ -10,36 +10,40 @@ interface FeaturedPoemsProps {
   dictionary: any
 }
 
-const samplePoems = [
-  {
-    id: 1,
-    title: 'Der Panther',
-    author: 'Rainer Maria Rilke',
-    language: 'de',
-    excerpt: 'Sein Blick ist vom Vorübergehn der Stäbe\nso müd geworden, dass er nichts mehr hält.\nIhm ist, als ob es tausend Stäbe gäbe\nund hinter tausend Stäben keine Welt.',
-    tags: ['nature', 'freedom', 'silence'],
-  },
-  {
-    id: 2,
-    title: 'The Road Not Taken',
-    author: 'Robert Frost',
-    language: 'en',
-    excerpt: 'Two roads diverged in a yellow wood,\nAnd sorry I could not travel both\nAnd be one traveler, long I stood\nAnd looked down one as far as I could',
-    tags: ['choice', 'journey', 'time'],
-  },
-  {
-    id: 3,
-    title: 'Я вас любил',
-    author: 'Александр Пушкин',
-    language: 'ru',
-    excerpt: 'Я вас любил: любовь еще, быть может,\nВ душе моей угасла не совсем;\nНо пусть она вас больше не тревожит;\nЯ не хочу печалить вас ничем.',
-    tags: ['love', 'memory', 'time'],
-  },
-]
+interface Poem {
+  id: string
+  slug: string
+  title: string
+  content: string
+  excerpt: string | null
+  language: string
+  poet: { name: string }
+  tags: Array<{ tag: { slug: string; nameEn: string; nameDe: string; nameRu: string } }>
+}
 
 export default function FeaturedPoems({ locale, dictionary }: FeaturedPoemsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(containerRef, { once: true, amount: 0.2 })
+  const [poems, setPoems] = useState<Poem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // First try to get featured poems, then fall back to latest
+    fetch('/api/poems?featured=true&limit=3')
+      .then(res => res.json())
+      .then(data => {
+        if (data.poems && data.poems.length > 0) {
+          setPoems(data.poems)
+        } else {
+          // No featured poems, get latest instead
+          return fetch('/api/poems?limit=3')
+            .then(res => res.json())
+            .then(data => setPoems(data.poems || []))
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -78,55 +82,72 @@ export default function FeaturedPoems({ locale, dictionary }: FeaturedPoemsProps
           <div className="w-20 h-1 bg-blood-red mx-auto" />
         </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-        >
-          {samplePoems.map((poem) => (
-            <motion.article
-              key={poem.id}
-              variants={itemVariants}
-              className="group relative"
-            >
-              <div className="brutalist-border p-8 bg-paper hover:bg-gold-leaf/5 transition-all duration-300 h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
-                    {poem.title}
-                  </h3>
-                  <span className="text-xs font-mono text-ink-black/50 uppercase">
-                    {poem.language}
-                  </span>
-                </div>
-                
-                <p className="text-sm text-ink-black/70 mb-4">{dictionary.poems.by} {poem.author}</p>
-                
-                <pre className="font-serif text-ink-black/90 mb-6 whitespace-pre-wrap">
-                  {poem.excerpt}
-                </pre>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {poem.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 text-xs font-sans bg-ink-black/10 text-ink-black hover:bg-blood-red hover:text-paper transition-colors cursor-pointer"
-                    >
-                      #{dictionary.poems.tags[tag] || tag}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="text-ink-black/50 font-serif text-xl">Loading...</div>
+          </div>
+        ) : poems.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-ink-black/60 font-serif text-xl italic">
+              {locale === 'de' && 'Noch keine Gedichte veröffentlicht.'}
+              {locale === 'en' && 'No poems published yet. Be the first to submit!'}
+              {locale === 'ru' && 'Стихи пока не опубликованы.'}
+            </p>
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? 'visible' : 'hidden'}
+          >
+            {poems.map((poem) => (
+              <motion.article
+                key={poem.id}
+                variants={itemVariants}
+                className="group relative"
+              >
+                <div className="brutalist-border p-8 bg-paper hover:bg-gold-leaf/5 transition-all duration-300 h-full">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
+                      {poem.title}
+                    </h3>
+                    <span className="text-xs font-mono text-ink-black/50 uppercase">
+                      {poem.language}
                     </span>
-                  ))}
+                  </div>
+
+                  <p className="text-sm text-ink-black/70 mb-4">{dictionary.poems.by} {poem.poet.name}</p>
+
+                  <pre className="font-serif text-ink-black/90 mb-6 whitespace-pre-wrap">
+                    {(poem.excerpt || poem.content).substring(0, 200)}
+                    {(poem.excerpt || poem.content).length > 200 ? '...' : ''}
+                  </pre>
+
+                  {poem.tags && poem.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {poem.tags.map((t) => (
+                        <span
+                          key={t.tag.slug}
+                          className="px-2 py-1 text-xs font-sans bg-ink-black/10 text-ink-black hover:bg-blood-red hover:text-paper transition-colors cursor-pointer"
+                        >
+                          #{locale === 'de' ? t.tag.nameDe : locale === 'ru' ? t.tag.nameRu : t.tag.nameEn}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <Link
+                    href={`/${locale}/poems/${poem.slug}`}
+                    className="inline-block text-sm font-medium text-blood-red hover:text-ink-black transition-colors"
+                  >
+                    {dictionary.poems.readMore} →
+                  </Link>
                 </div>
-                
-                <Link
-                  href={`/${locale}/poems/${poem.id}`}
-                  className="inline-block text-sm font-medium text-blood-red hover:text-ink-black transition-colors"
-                >
-                  {dictionary.poems.readMore} →
-                </Link>
-              </div>
-            </motion.article>
-          ))}
-        </motion.div>
+              </motion.article>
+            ))}
+          </motion.div>
+        )}
 
         <motion.div
           className="text-center mt-12"

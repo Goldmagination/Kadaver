@@ -654,6 +654,15 @@ h1, h2, h3, h4, h5, h6{
 .mt-4{
   margin-top: 1rem;
 }
+.mt-1{
+  margin-top: 0.25rem;
+}
+.mt-2{
+  margin-top: 0.5rem;
+}
+.mt-8{
+  margin-top: 2rem;
+}
 .block{
   display: block;
 }
@@ -723,6 +732,9 @@ h1, h2, h3, h4, h5, h6{
 .max-w-7xl{
   max-width: 80rem;
 }
+.max-w-5xl{
+  max-width: 64rem;
+}
 .-translate-x-1\/2{
   --tw-translate-x: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -785,6 +797,9 @@ h1, h2, h3, h4, h5, h6{
 .gap-8{
   gap: 2rem;
 }
+.gap-3{
+  gap: 0.75rem;
+}
 .space-x-2 > :not([hidden]) ~ :not([hidden]){
   --tw-space-x-reverse: 0;
   margin-right: calc(0.5rem * var(--tw-space-x-reverse));
@@ -831,6 +846,9 @@ h1, h2, h3, h4, h5, h6{
 }
 .border{
   border-width: 1px;
+}
+.border-2{
+  border-width: 2px;
 }
 .border-b{
   border-bottom-width: 1px;
@@ -894,6 +912,16 @@ h1, h2, h3, h4, h5, h6{
 .bg-transparent{
   background-color: transparent;
 }
+.bg-blood-red\/20{
+  background-color: rgb(139 0 0 / 0.2);
+}
+.bg-gold-leaf\/20{
+  background-color: rgb(255 215 0 / 0.2);
+}
+.bg-green-100{
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1));
+}
 .bg-\[url\(\'\/textures\/noise\.png\'\)\]{
   background-image: url('/textures/noise.png');
 }
@@ -923,6 +951,9 @@ h1, h2, h3, h4, h5, h6{
 }
 .p-8{
   padding: 2rem;
+}
+.p-6{
+  padding: 1.5rem;
 }
 .px-2{
   padding-left: 0.5rem;
@@ -1043,6 +1074,10 @@ h1, h2, h3, h4, h5, h6{
   font-size: 0.75rem;
   line-height: 1rem;
 }
+.text-4xl{
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
 .font-bold{
   font-weight: 700;
 }
@@ -1116,6 +1151,12 @@ h1, h2, h3, h4, h5, h6{
 }
 .text-paper\/80{
   color: rgb(250 250 248 / 0.8);
+}
+.text-ink-black\/40{
+  color: rgb(10 10 10 / 0.4);
+}
+.text-ink-black\/5{
+  color: rgb(10 10 10 / 0.05);
 }
 .opacity-0{
   opacity: 0;
@@ -1208,6 +1249,11 @@ h1, h2, h3, h4, h5, h6{
 .hover\:bg-ink-black:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(10 10 10 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:bg-green-700:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(21 128 61 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:text-blood-red:hover{
@@ -1312,6 +1358,10 @@ h1, h2, h3, h4, h5, h6{
   .md\:text-8xl{
     font-size: 6rem;
     line-height: 1;
+  }
+  .md\:text-xl{
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
 }
 
