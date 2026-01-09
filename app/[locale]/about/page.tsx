@@ -13,20 +13,20 @@ interface AboutPageProps {
 const content = {
   de: {
     title: 'Über Kadaver',
-    subtitle: 'Eine Gesellschaft der Dichter',
-    intro: 'Kadaver ist mehr als eine Website – es ist ein lebendiges Archiv der Poesie, ein Ort, an dem Worte atmen und Verse unsterblich werden.',
+    subtitle: 'Eine literarische Gesellschaft',
+    intro: 'Kadaver ist mehr als eine Website – es ist ein lebendiges Archiv der Literatur, ein Ort, an dem Worte atmen und Werke unsterblich werden.',
     sections: [
       {
         title: 'Unsere Mission',
-        content: 'Wir glauben, dass Poesie keine Grenzen kennt. In einer Welt, die immer schneller wird, schaffen wir einen Raum der Stille, in dem jedes Wort zählt. Kadaver vereint Gedichte in Deutsch, Russisch und Englisch – drei Sprachen, drei Kulturen, eine universelle Sprache der Seele.'
+        content: 'Wir glauben, dass Literatur keine Grenzen kennt. In einer Welt, die immer schneller wird, schaffen wir einen Raum der Stille, in dem jedes Wort zählt. Kadaver vereint Texte in Deutsch, Russisch und Englisch – drei Sprachen, drei Kulturen, eine universelle Sprache der Seele.'
       },
       {
         title: 'Der Name',
-        content: 'Kadaver – ein provokanter Name für ein poetisches Projekt. Wie der Exquisite Corpse der Surrealisten entsteht hier Kunst aus dem Unerwarteten. Jedes Gedicht ist ein Fragment eines größeren Ganzen, jeder Dichter trägt zum kollektiven Körper der Literatur bei.'
+        content: 'Kadaver – ein provokanter Name für ein literarisches Projekt. Wie der Exquisite Corpse der Surrealisten entsteht hier Kunst aus dem Unerwarteten. Jeder Text ist ein Fragment eines größeren Ganzen, jeder Autor trägt zum kollektiven Körper der Literatur bei.'
       },
       {
-        title: 'Für Dichter',
-        content: 'Kadaver ist offen für alle, die ihre Stimme teilen möchten. Ob etablierter Autor oder aufstrebender Poet – hier finden Ihre Worte ein Zuhause. Reichen Sie Ihre Gedichte ein und werden Sie Teil unserer wachsenden Gemeinschaft.'
+        title: 'Für Autoren',
+        content: 'Kadaver ist offen für alle, die ihre Stimme teilen möchten. Ob etablierter Schriftsteller oder aufstrebendes Talent – hier finden Ihre Worte ein Zuhause. Reichen Sie Ihre Arbeiten ein und werden Sie Teil unserer wachsenden Gemeinschaft.'
       }
     ],
     quote: 'block block block ich bin Schriftsteller Blok.',
@@ -34,20 +34,20 @@ const content = {
   },
   en: {
     title: 'About Kadaver',
-    subtitle: 'A Society of Poets',
-    intro: 'Kadaver is more than a website – it is a living archive of poetry, a place where words breathe and verses become immortal.',
+    subtitle: 'A Literary Society',
+    intro: 'Kadaver is a living archive of literature, a place where words breathe and works become immortal.',
     sections: [
       {
         title: 'Our Mission',
-        content: 'We believe that poetry knows no borders. In a world that moves ever faster, we create a space of stillness where every word matters. Kadaver unites poems in German, Russian, and English – three languages, three cultures, one universal language of the soul.'
+        content: 'We believe that literature knows no borders. In a world that moves ever faster, we create a space of stillness where every word matters. Kadaver unites works in German, Russian, and English – three languages, three cultures, one universal language of the soul.'
       },
       {
         title: 'The Name',
-        content: 'Kadaver – a provocative name for a poetic project. Like the Exquisite Corpse of the Surrealists, art emerges here from the unexpected. Each poem is a fragment of a greater whole, each poet contributes to the collective body of literature.'
+        content: 'Kadaver – a provocative name for a literary project. Like the Exquisite Corpse of the Surrealists, art emerges here from the unexpected. Each text is a fragment of a greater whole, each author contributes to the collective body of literature.'
       },
       {
-        title: 'For Poets',
-        content: 'Kadaver is open to all who wish to share their voice. Whether established author or emerging poet – your words find a home here. Submit your poems and become part of our growing community.'
+        title: 'For Authors',
+        content: 'Kadaver is open to all who wish to share their voice. Whether established writer or emerging talent – your words find a home here. Submit your works and become part of our growing community.'
       }
     ],
     quote: 'block block block I am writer Blok.',
@@ -55,20 +55,20 @@ const content = {
   },
   ru: {
     title: 'О Кадавере',
-    subtitle: 'Общество поэтов',
-    intro: 'Кадавер — это больше, чем веб-сайт — это живой архив поэзии, место, где слова дышат, а стихи становятся бессмертными.',
+    subtitle: 'Литературное общество',
+    intro: 'Кадавер — это живой литературный архив, место, где слова дышат, а произведения становятся бессмертными.',
     sections: [
       {
         title: 'Наша миссия',
-        content: 'Мы верим, что поэзия не знает границ. В мире, который движется всё быстрее, мы создаём пространство тишины, где важно каждое слово. Кадавер объединяет стихи на немецком, русском и английском — три языка, три культуры, один универсальный язык души.'
+        content: 'Мы верим, что литература не знает границ. В мире, который движется всё быстрее, мы создаём пространство тишины, где важно каждое слово. Кадавер объединяет тексты на немецком, русском и английском — три языка, три культуры, один универсальный язык души.'
       },
       {
         title: 'Название',
-        content: 'Кадавер — провокационное название для поэтического проекта. Как «Изысканный труп» сюрреалистов, здесь искусство рождается из неожиданного. Каждое стихотворение — фрагмент большего целого, каждый поэт вносит вклад в коллективное тело литературы.'
+        content: 'Кадавер — провокационное название для литературного проекта. Как «Изысканный труп» сюрреалистов, здесь искусство рождается из неожиданного. Каждый текст — фрагмент большего целого, каждый автор вносит вклад в коллективное тело литературы.'
       },
       {
-        title: 'Для поэтов',
-        content: 'Кадавер открыт для всех, кто хочет поделиться своим голосом. Признанный автор или начинающий поэт — ваши слова найдут здесь дом. Присылайте свои стихи и станьте частью нашего растущего сообщества.'
+        title: 'Для авторов',
+        content: 'Кадавер открыт для всех, кто хочет поделиться своим голосом. Будь вы прозаик, поэт или эссеист — ваши слова найдут здесь дом. Присылайте свои работы и станьте частью нашего растущего сообщества.'
       }
     ],
     quote: 'Блок-блок-блок-блок-блок. Я писатель Блок.',
