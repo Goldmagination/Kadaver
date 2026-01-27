@@ -1537,6 +1537,10 @@ h1, h2, h3, h4, h5, h6{
     font-size: 6rem;
     line-height: 1;
   }
+  .md\:text-xl{
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
 }
 
 @media (min-width: 1024px){
