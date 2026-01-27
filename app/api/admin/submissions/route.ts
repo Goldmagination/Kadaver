@@ -100,19 +100,57 @@ export async function POST(request: NextRequest) {
       .replace(/-+/g, '-')
       .trim()
 
+    // Prepare content for Work record
+    let finalContent: string | null = submission.content
+    let excerpt = undefined
+
+    const subChapters = (submission as any).chapters
+    if (submission.type === 'NOVEL' && subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
+      // For novels, we don't want the placeholder in the main content.
+      // We can either leave it empty or put the first chapter's content.
+      // Let's set the main content to null (as per schema comment) and use first chapter for excerpt.
+      finalContent = null
+
+      // Generate excerpt from first chapter
+      const firstChapter = subChapters[0]
+      if (firstChapter && firstChapter.content) {
+        excerpt = firstChapter.content.substring(0, 300) + '...'
+      }
+    } else {
+      // For poems/tales, generate excerpt from content
+      if (submission.content) {
+        excerpt = submission.content.substring(0, 300) + '...'
+      }
+    }
+
     const work = await prisma.work.create({
       data: {
         title: submission.title,
-        content: submission.content,
+        content: finalContent,
+        excerpt: excerpt,
         slug: `${workSlug}-${Date.now()}`,
         language: submission.language,
         authorId: author.id,
         published: true,
         publishedAt: new Date(),
-        type: submission.type || 'POEM', // Use submitted type or default
+        type: submission.type || 'POEM',
         renderingConfig: renderingConfig || undefined,
       }
     })
+
+    // Create chapters if they exist
+    if (subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
+      const chaptersData = subChapters.map((chapter: any, index: number) => ({
+        workId: work.id,
+        order: index + 1,
+        title: chapter.title || `Chapter ${index + 1}`,
+        content: chapter.content || '',
+      }))
+
+      await prisma.chapter.createMany({
+        data: chaptersData
+      })
+    }
 
     // Update the submission
     await prisma.submission.update({

@@ -103,7 +103,7 @@ export default function WorkRenderer({
                 trackingClass
             )}>
                 {paragraphs.map((paragraph, index) => (
-                    <p key={index} className={cn(paragraphSpacingClass, {
+                    <p key={index} className={cn(paragraphSpacingClass, "whitespace-pre-line", {
                         'first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left': settings.dropCap && index === 0
                     })}>
                         {paragraph.trim()}

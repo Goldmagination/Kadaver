@@ -26,9 +26,28 @@ export async function POST(request: NextRequest) {
     const { title, author, language, content, tags, email, type, chapters } = body
 
     // Validate required fields
-    if (!title || !author || !language || !content || !email) {
+    // For NOVELs, content comes from chapters. For others, content string is required.
+    const isNovel = type === 'NOVEL'
+    const hasContent = content && content.trim().length > 0
+    const hasChapters = isNovel && chapters && Array.isArray(chapters) && chapters.length > 0
+
+    if (!title || !author || !language || !email) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    if (isNovel && !hasChapters) {
+      return NextResponse.json(
+        { error: 'Novels must have at least one chapter' },
+        { status: 400 }
+      )
+    }
+
+    if (!isNovel && !hasContent) {
+      return NextResponse.json(
+        { error: 'Content is required' },
         { status: 400 }
       )
     }
@@ -51,9 +70,9 @@ export async function POST(request: NextRequest) {
           title,
           authorName: author,
           language: language.toLowerCase() as 'de' | 'en' | 'ru',
-          content,
+          content: content || (isNovel ? 'NOVEL SUBMISSION (See Chapters)' : ''),
           type: type || 'POEM', // Default to POEM if not specified
-          chapters: (type === 'NOVEL' && chapters) ? chapters : undefined,
+          chapters: (isNovel && chapters) ? chapters : undefined,
           submitterId: user.id,
           status: 'PENDING',
         },
