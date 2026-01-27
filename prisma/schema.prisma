@@ -12,7 +12,7 @@ datasource db {
 }
 
 // ============================================
-// LANGUAGE ENUM
+// ENUMS
 // ============================================
 
 enum Language {
@@ -21,16 +21,22 @@ enum Language {
   ru // Russian
 }
 
-// ============================================
-// USER & AUTHENTICATION
-// ============================================
-
 enum UserRole {
-  READER     // Can read and like poems
-  POET       // Can submit poems
+  READER     // Can read and like works
+  POET       // Can submit works
   EDITOR     // Can approve submissions
   ADMIN      // Full access
 }
+
+enum WorkType {
+  POEM
+  TALE
+  NOVEL
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
 
 model User {
   id            String    @id @default(cuid())
@@ -56,10 +62,10 @@ model User {
 }
 
 // ============================================
-// POET (Authors of poems)
+// AUTHOR (Formerly Poet)
 // ============================================
 
-model Poet {
+model Author {
   id            String    @id @default(cuid())
   slug          String    @unique
 
@@ -78,7 +84,7 @@ model Poet {
   deathYear     Int?
   nationality   String?
 
-  // Languages the poet writes in
+  // Languages the author writes in
   languages     Language[]
 
   // External links
@@ -86,7 +92,7 @@ model Poet {
   websiteUrl    String?
 
   // Relations
-  poems         Poem[]
+  works         Work[]
 
   // Metadata
   featured      Boolean   @default(false)
@@ -99,7 +105,7 @@ model Poet {
 }
 
 // ============================================
-// TAG (Categories for poems)
+// TAG (Categories for works)
 // ============================================
 
 model Tag {
@@ -116,7 +122,7 @@ model Tag {
   color         String?   // Hex color for UI
 
   // Relations
-  poems         PoemTag[]
+  works         WorkTag[]
 
   createdAt     DateTime  @default(now())
 
@@ -124,29 +130,37 @@ model Tag {
 }
 
 // ============================================
-// POEM (The heart of Kadaver)
+// WORK (The unified unified creative entity)
 // ============================================
 
-model Poem {
+model Work {
   id            String    @id @default(cuid())
   slug          String    @unique
+  type          WorkType  @default(POEM)
 
   // Content
   title         String
-  content       String    @db.Text
+  content       String?   @db.Text // Nullable for Novels (content is in chapters)
   excerpt       String?   @db.Text
 
-  // Language of the poem
+  // Language
   language      Language
 
   // Author
-  poetId        String
-  poet          Poet      @relation(fields: [poetId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        Author    @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  // Audio recording
+  // Audio recording (primarily for Poems)
   audioUrl      String?
   audioDuration Int?      // Duration in seconds
   audioReader   String?   // Who recorded the audio
+
+  // Structure for Novels
+  chapters      Chapter[]
+
+  // Visuals & Rendering (The Typesetter)
+  // Stores JSON config: { font: "Playfair", align: "center", spacing: "relaxed", dropCap: boolean, etc. }
+  renderingConfig Json?
 
   // Publishing
   published     Boolean   @default(false)
@@ -161,7 +175,7 @@ model Poem {
   year          Int?      // Year written/published
 
   // Relations
-  tags          PoemTag[]
+  tags          WorkTag[]
   favorites     Favorite[]
 
   // Metadata
@@ -169,50 +183,74 @@ model Poem {
   updatedAt     DateTime  @updatedAt
 
   @@index([slug])
+  @@index([type])
   @@index([language])
-  @@index([poetId])
+  @@index([authorId])
   @@index([published, featured])
   @@index([publishedAt])
 }
 
 // ============================================
-// POEM-TAG RELATION (Many-to-Many)
+// CHAPTER (For Novels)
 // ============================================
 
-model PoemTag {
-  poemId        String
+model Chapter {
+  id            String    @id @default(cuid())
+  
+  workId        String
+  work          Work      @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  order         Int       // Chapter number/order
+  title         String?
+  content       String    @db.Text
+  
+  // Specific rendering override for chapter?
+  renderingConfig Json?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([workId, order])
+}
+
+// ============================================
+// WORK-TAG RELATION (Many-to-Many)
+// ============================================
+
+model WorkTag {
+  workId        String
   tagId         String
 
-  poem          Poem      @relation(fields: [poemId], references: [id], onDelete: Cascade)
+  work          Work      @relation(fields: [workId], references: [id], onDelete: Cascade)
   tag           Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   assignedAt    DateTime  @default(now())
 
-  @@id([poemId, tagId])
-  @@index([poemId])
+  @@id([workId, tagId])
+  @@index([workId])
   @@index([tagId])
 }
 
 // ============================================
-// FAVORITE (User's saved poems)
+// FAVORITE (User's saved works)
 // ============================================
 
 model Favorite {
   userId        String
-  poemId        String
+  workId        String
 
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  poem          Poem      @relation(fields: [poemId], references: [id], onDelete: Cascade)
+  work          Work      @relation(fields: [workId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime  @default(now())
 
-  @@id([userId, poemId])
+  @@id([userId, workId])
   @@index([userId])
-  @@index([poemId])
+  @@index([workId])
 }
 
 // ============================================
-// SUBMISSION (User-submitted poems)
+// SUBMISSION (User-submitted works)
 // ============================================
 
 enum SubmissionStatus {
@@ -227,8 +265,10 @@ model Submission {
   // Submitted content
   title         String
   content       String           @db.Text
-  authorName    String           // Can be different from poet name
+  chapters      Json?            // For Novels: [{ title: "Chapter 1", content: "..." }]
+  authorName    String           // Can be different from author name
   language      Language
+  type          WorkType         @default(POEM)
 
   // Optional audio
   audioUrl      String?
@@ -242,8 +282,8 @@ model Submission {
   reviewNotes   String?          @db.Text
   reviewedAt    DateTime?
 
-  // If approved, link to created poem
-  approvedPoemId String?
+  // If approved, link to created work
+  approvedWorkId String?
 
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt

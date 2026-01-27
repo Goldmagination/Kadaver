@@ -28,8 +28,8 @@ export default function Navigation({ locale, dictionary }: NavigationProps) {
 
   const navItems = [
     { href: `/${locale}`, label: dictionary.navigation.home },
-    { href: `/${locale}/poems`, label: dictionary.navigation.poems },
-    { href: `/${locale}/poets`, label: dictionary.navigation.poets },
+    { href: `/${locale}/works`, label: dictionary.navigation.works },
+    { href: `/${locale}/authors`, label: dictionary.navigation.authors },
     { href: `/${locale}/about`, label: dictionary.navigation.about },
     { href: `/${locale}/submit`, label: dictionary.navigation.submit },
   ]

@@ -11,25 +11,25 @@
   },
   "navigation": {
     "home": "Startseite",
-    "poems": "Gedichte",
-    "poets": "Dichter",
+    "works": "Werke",
+    "authors": "Autoren",
     "about": "Über uns",
-    "submit": "Gedicht einreichen",
+    "submit": "Werk einreichen",
     "contact": "Kontakt"
   },
   "homepage": {
     "hero": {
       "title": "Wo Worte Tinte bluten",
-      "subtitle": "Ein Heiligtum für Poesie in drei Sprachen",
-      "cta": "Poesie erkunden",
+      "subtitle": "Ein Heiligtum für Literatur in drei Sprachen",
+      "cta": "Werke erkunden",
       "scroll": "Scrollen zum Entdecken"
     },
     "featured": {
-      "title": "Ausgewählte Gedichte",
-      "viewAll": "Alle Gedichte anzeigen"
+      "title": "Ausgewählte Werke",
+      "viewAll": "Alle Werke anzeigen"
     }
   },
-  "poems": {
+  "works": {
     "filters": {
       "all": "Alle",
       "byLanguage": "Nach Sprache",
@@ -52,23 +52,23 @@
     },
     "readMore": "Mehr lesen",
     "readLess": "Weniger lesen",
-    "listenTo": "Gedicht anhören",
+    "listenTo": "Anhören",
     "share": "Teilen",
     "by": "von"
   },
   "submit": {
-    "title": "Reichen Sie Ihre Poesie ein",
+    "title": "Reichen Sie Ihr Werk ein",
     "guidelines": "Einreichungsrichtlinien",
     "form": {
-      "title": "Gedichttitel",
+      "title": "Titel",
       "author": "Autorenname",
       "language": "Sprache",
-      "content": "Ihr Gedicht",
+      "content": "Ihr Werk",
       "tags": "Tags (durch Kommas getrennt)",
       "email": "Kontakt-E-Mail",
-      "submit": "Gedicht einreichen",
-      "success": "Ihr Gedicht wurde erfolgreich eingereicht",
-      "error": "Fehler beim Einreichen des Gedichts. Bitte versuchen Sie es erneut."
+      "submit": "Werk einreichen",
+      "success": "Ihr Werk wurde erfolgreich eingereicht",
+      "error": "Fehler beim Einreichen des Werks. Bitte versuchen Sie es erneut."
     }
   },
   "footer": {

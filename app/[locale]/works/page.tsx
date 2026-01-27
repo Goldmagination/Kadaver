@@ -7,18 +7,18 @@ import type { Locale } from '@/i18n.config'
 import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
 
-interface PoemsPageProps {
+interface WorksPageProps {
   params: { locale: Locale }
 }
 
-interface Poem {
+interface Work {
   id: string
   slug: string
   title: string
-  content: string
+  content: string | null
   excerpt: string | null
   language: string
-  poet: {
+  author: {
     name: string
   }
   tags: Array<{
@@ -48,9 +48,9 @@ const itemVariants = {
   },
 }
 
-export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
+export default function WorksPage({ params: { locale } }: WorksPageProps) {
   const [dictionary, setDictionary] = useState<any>(null)
-  const [poems, setPoems] = useState<Poem[]>([])
+  const [works, setWorks] = useState<Work[]>([])
   const [filter, setFilter] = useState<'all' | 'de' | 'en' | 'ru'>('all')
   const [loading, setLoading] = useState(true)
 
@@ -59,30 +59,30 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
       setDictionary(mod.default)
     })
 
-    // Fetch poems from API
-    fetch('/api/poems')
+    // Fetch works from API
+    fetch('/api/works')
       .then(res => res.json())
       .then(data => {
-        setPoems(data.poems || [])
+        setWorks(data.works || [])
       })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [locale])
 
-  const filteredPoems = filter === 'all'
-    ? poems
-    : poems.filter(poem => poem.language === filter)
+  const filteredWorks = filter === 'all'
+    ? works
+    : works.filter(work => work.language === filter)
 
   const pageTitle = {
-    de: 'Alle Gedichte',
-    en: 'All Poems',
-    ru: 'Все стихи'
+    de: 'Alle Werke',
+    en: 'All Works',
+    ru: 'Все произведения'
   }
 
   const pageSubtitle = {
-    de: 'Eine Sammlung von Versen in drei Sprachen',
-    en: 'A collection of verses in three tongues',
-    ru: 'Коллекция стихов на трех языках'
+    de: 'Eine Sammlung von literarischen Werken in drei Sprachen',
+    en: 'A collection of literary works in three tongues',
+    ru: 'Коллекция литературных произведений на трех языках'
   }
 
   if (!dictionary) {
@@ -130,10 +130,10 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
 
         {/* Decorative elements */}
         <div className="absolute top-40 left-10 text-vertical-rl text-ink-black/10 font-serif text-6xl select-none hidden lg:block">
-          GEDICHTE
+          WERKE
         </div>
         <div className="absolute bottom-10 right-10 text-vertical-rl text-ink-black/10 font-serif text-6xl select-none hidden lg:block">
-          СТИХИ
+          РАБОТЫ
         </div>
       </section>
 
@@ -142,7 +142,7 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-4">
             {[
-              { key: 'all', label: dictionary.poems.filters.all },
+              { key: 'all', label: dictionary.works.filters.all },
               { key: 'de', label: 'Deutsch' },
               { key: 'en', label: 'English' },
               { key: 'ru', label: 'Русский' },
@@ -150,11 +150,10 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
               <button
                 key={item.key}
                 onClick={() => setFilter(item.key as typeof filter)}
-                className={`px-6 py-2 font-sans text-sm transition-all duration-300 ${
-                  filter === item.key
+                className={`px-6 py-2 font-sans text-sm transition-all duration-300 ${filter === item.key
                     ? 'bg-ink-black text-paper'
                     : 'bg-transparent text-ink-black border border-ink-black/30 hover:border-ink-black'
-                }`}
+                  }`}
               >
                 {item.label}
               </button>
@@ -163,24 +162,24 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
         </div>
       </section>
 
-      {/* Poems Grid */}
+      {/* Works Grid */}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
           {loading ? (
             <div className="text-center py-12">
-              <div className="text-ink-black/50 font-serif text-xl">Loading poems...</div>
+              <div className="text-ink-black/50 font-serif text-xl">Loading works...</div>
             </div>
-          ) : filteredPoems.length === 0 ? (
+          ) : filteredWorks.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-ink-black/60 font-serif text-xl italic mb-4">
-                {locale === 'de' && 'Noch keine Gedichte veröffentlicht.'}
-                {locale === 'en' && 'No poems published yet.'}
-                {locale === 'ru' && 'Стихи пока не опубликованы.'}
+                {locale === 'de' && 'Noch keine Werke veröffentlicht.'}
+                {locale === 'en' && 'No works published yet.'}
+                {locale === 'ru' && 'Произведения пока не опубликованы.'}
               </p>
               <p className="text-ink-black/40 font-sans">
-                {locale === 'de' && 'Reichen Sie Ihre Poesie ein!'}
-                {locale === 'en' && 'Submit your poetry!'}
-                {locale === 'ru' && 'Присылайте свои стихи!'}
+                {locale === 'de' && 'Reichen Sie Ihr Werk ein!'}
+                {locale === 'en' && 'Submit your work!'}
+                {locale === 'ru' && 'Присылайте свои работы!'}
               </p>
             </div>
           ) : (
@@ -191,38 +190,38 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
               animate="visible"
               key={filter}
             >
-              {filteredPoems.map((poem) => (
+              {filteredWorks.map((work) => (
                 <motion.article
-                  key={poem.id}
+                  key={work.id}
                   variants={itemVariants}
                   className="group"
                 >
-                  <Link href={`/${locale}/poems/${poem.slug}`}>
+                  <Link href={`/${locale}/works/${work.slug}`}>
                     <motion.div
                       className="brutalist-border p-8 bg-paper hover:bg-gold-leaf/5 transition-all duration-300 h-full"
                       whileHover={{ y: -5, boxShadow: '8px 8px 0 var(--ink-black)' }}
                     >
                       <div className="flex items-start justify-between mb-4">
                         <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
-                          {poem.title}
+                          {work.title}
                         </h3>
                         <span className="text-xs font-mono text-ink-black/50 uppercase">
-                          {poem.language}
+                          {work.language}
                         </span>
                       </div>
 
                       <p className="text-sm text-ink-black/70 mb-4">
-                        {dictionary.poems.by} {poem.poet.name}
+                        {dictionary.works.by} {work.author.name}
                       </p>
 
                       <pre className="font-serif text-ink-black/90 mb-6 whitespace-pre-wrap text-sm leading-relaxed">
-                        {(poem.excerpt || poem.content).substring(0, 200)}
-                        {(poem.excerpt || poem.content).length > 200 ? '...' : ''}
+                        {(work.excerpt || work.content || '').substring(0, 200)}
+                        {(work.excerpt || work.content || '').length > 200 ? '...' : ''}
                       </pre>
 
-                      {poem.tags && poem.tags.length > 0 && (
+                      {work.tags && work.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {poem.tags.map((t) => (
+                          {work.tags.map((t) => (
                             <span
                               key={t.tag.slug}
                               className="px-2 py-1 text-xs font-sans bg-ink-black/10 text-ink-black"
@@ -234,7 +233,7 @@ export default function PoemsPage({ params: { locale } }: PoemsPageProps) {
                       )}
 
                       <span className="inline-block text-sm font-medium text-blood-red group-hover:text-ink-black transition-colors">
-                        {dictionary.poems.readMore} →
+                        {dictionary.works.readMore} →
                       </span>
                     </motion.div>
                   </Link>

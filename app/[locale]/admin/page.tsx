@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import type { Locale } from '@/i18n.config'
 import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
+import { RenderingConfig, defaultConfig, poemDefaultConfig } from '@/lib/types/rendering'
+import { cn } from '@/lib/utils'
 
 // Only allow access on localhost
 function isLocalhost(): boolean {
@@ -20,6 +22,7 @@ interface Submission {
   authorName: string
   language: string
   status: string
+  type: string
   createdAt: string
   submitter: {
     email: string
@@ -36,6 +39,9 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [isAllowed, setIsAllowed] = useState(false)
+
+  // Store rendering config for each submission being reviewed
+  const [configs, setConfigs] = useState<Record<string, RenderingConfig>>({})
 
   useEffect(() => {
     // Check if running locally
@@ -70,7 +76,12 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
       const res = await fetch('/api/admin/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ submissionId, action }),
+        body: JSON.stringify({
+          submissionId,
+          action,
+          // If action is approve, send the config
+          renderingConfig: action === 'approve' ? (configs[submissionId] || undefined) : undefined
+        }),
       })
 
       if (res.ok) {
@@ -136,7 +147,7 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            Review and publish poem submissions
+            Review and publish work submissions
           </motion.p>
         </div>
       </section>
@@ -173,20 +184,19 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
                         {submission.title}
                       </h3>
                       <p className="text-sm text-ink-black/60 mt-1">
-                        by {submission.authorName} • {submission.language.toUpperCase()} • {submission.submitter?.email}
+                        by {submission.authorName} • {submission.language.toUpperCase()} • {submission.submitter?.email} <span className="ml-2 font-mono text-blood-red">[{submission.type}]</span>
                       </p>
                     </div>
-                    <span className={`px-3 py-1 text-xs font-mono uppercase ${
-                      submission.status === 'PENDING' ? 'bg-gold-leaf/20 text-ink-black' :
+                    <span className={`px-3 py-1 text-xs font-mono uppercase ${submission.status === 'PENDING' ? 'bg-gold-leaf/20 text-ink-black' :
                       submission.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                      'bg-blood-red/20 text-blood-red'
-                    }`}>
+                        'bg-blood-red/20 text-blood-red'
+                      }`}>
                       {submission.status}
                     </span>
                   </div>
 
                   <pre className="font-serif text-ink-black/80 whitespace-pre-wrap mb-6 p-4 bg-ink-black/5 rounded">
-                    {submission.content}
+                    {submission.content || '[Content rendering pending]'}
                   </pre>
 
                   <div className="flex items-center justify-between">
@@ -195,21 +205,103 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
                     </span>
 
                     {submission.status === 'PENDING' && (
-                      <div className="flex gap-4">
-                        <button
-                          onClick={() => handleAction(submission.id, 'reject')}
-                          disabled={actionLoading === submission.id}
-                          className="px-4 py-2 border-2 border-blood-red text-blood-red hover:bg-blood-red hover:text-paper transition-colors disabled:opacity-50"
-                        >
-                          Reject
-                        </button>
-                        <button
-                          onClick={() => handleAction(submission.id, 'approve')}
-                          disabled={actionLoading === submission.id}
-                          className="px-4 py-2 bg-ink-black text-paper hover:bg-green-700 transition-colors disabled:opacity-50"
-                        >
-                          {actionLoading === submission.id ? 'Publishing...' : 'Approve & Publish'}
-                        </button>
+                      <div className="mt-6 border-t border-ink-black/10 pt-4">
+                        <details className="group/details mb-4">
+                          <summary className="cursor-pointer text-sm font-bold text-ink-black/70 hover:text-blood-red transition-colors flex items-center select-none">
+                            <span className="mr-2">Typesetter Settings</span>
+                            <span className="text-xs text-ink-black/40 group-open/details:rotate-180 transition-transform">▼</span>
+                          </summary>
+
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 p-4 bg-paper border border-ink-black/10">
+                            {/* Font Family */}
+                            <div className="space-y-1">
+                              <label className="text-xs font-mono text-ink-black/50 uppercase">Font</label>
+                              <select
+                                className="w-full bg-transparent border-b border-ink-black/20 text-sm font-sans focus:border-blood-red outline-none"
+                                value={configs[submission.id]?.fontFamily || defaultConfig.fontFamily}
+                                onChange={(e) => setConfigs({
+                                  ...configs,
+                                  [submission.id]: { ...(configs[submission.id] || (submission.type === 'POEM' ? poemDefaultConfig : defaultConfig)), fontFamily: e.target.value as any }
+                                })}
+                              >
+                                <option value="playfair">Playfair Display</option>
+                                <option value="inter">Inter (Sans)</option>
+                                <option value="jetbrains">JetBrains (Mono)</option>
+                              </select>
+                            </div>
+
+                            {/* Text Align */}
+                            <div className="space-y-1">
+                              <label className="text-xs font-mono text-ink-black/50 uppercase">Align</label>
+                              <select
+                                className="w-full bg-transparent border-b border-ink-black/20 text-sm font-sans focus:border-blood-red outline-none"
+                                value={configs[submission.id]?.textAlign || (submission.type === 'POEM' ? 'center' : 'left')}
+                                onChange={(e) => setConfigs({
+                                  ...configs,
+                                  [submission.id]: { ...(configs[submission.id] || (submission.type === 'POEM' ? poemDefaultConfig : defaultConfig)), textAlign: e.target.value as any }
+                                })}
+                              >
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="justify">Justify</option>
+                                <option value="right">Right</option>
+                              </select>
+                            </div>
+
+                            {/* Font Size */}
+                            <div className="space-y-1">
+                              <label className="text-xs font-mono text-ink-black/50 uppercase">Size</label>
+                              <select
+                                className="w-full bg-transparent border-b border-ink-black/20 text-sm font-sans focus:border-blood-red outline-none"
+                                value={configs[submission.id]?.fontSize || defaultConfig.fontSize}
+                                onChange={(e) => setConfigs({
+                                  ...configs,
+                                  [submission.id]: { ...(configs[submission.id] || (submission.type === 'POEM' ? poemDefaultConfig : defaultConfig)), fontSize: e.target.value as any }
+                                })}
+                              >
+                                <option value="sm">Small</option>
+                                <option value="base">Base</option>
+                                <option value="lg">Large</option>
+                                <option value="xl">Extra Large</option>
+                              </select>
+                            </div>
+
+                            {/* Line Height */}
+                            <div className="space-y-1">
+                              <label className="text-xs font-mono text-ink-black/50 uppercase">Leading</label>
+                              <select
+                                className="w-full bg-transparent border-b border-ink-black/20 text-sm font-sans focus:border-blood-red outline-none"
+                                value={configs[submission.id]?.lineHeight || defaultConfig.lineHeight}
+                                onChange={(e) => setConfigs({
+                                  ...configs,
+                                  [submission.id]: { ...(configs[submission.id] || (submission.type === 'POEM' ? poemDefaultConfig : defaultConfig)), lineHeight: e.target.value as any }
+                                })}
+                              >
+                                <option value="tight">Tight</option>
+                                <option value="normal">Normal</option>
+                                <option value="relaxed">Relaxed</option>
+                                <option value="loose">Loose</option>
+                              </select>
+                            </div>
+                          </div>
+                        </details>
+
+                        <div className="flex gap-4 justify-end">
+                          <button
+                            onClick={() => handleAction(submission.id, 'reject')}
+                            disabled={actionLoading === submission.id}
+                            className="px-4 py-2 border-2 border-blood-red text-blood-red hover:bg-blood-red hover:text-paper transition-colors disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleAction(submission.id, 'approve')}
+                            disabled={actionLoading === submission.id}
+                            className="px-4 py-2 bg-ink-black text-paper hover:bg-green-700 transition-colors disabled:opacity-50 font-bold"
+                          >
+                            {actionLoading === submission.id ? 'Publishing...' : 'Approve & Publish'}
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>

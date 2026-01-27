@@ -26,7 +26,7 @@ export async function GET() {
 // POST - Approve or reject a submission
 export async function POST(request: NextRequest) {
   try {
-    const { submissionId, action } = await request.json()
+    const { submissionId, action, renderingConfig } = await request.json()
 
     if (!submissionId || !['approve', 'reject'].includes(action)) {
       return NextResponse.json(
@@ -67,15 +67,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Submission rejected' })
     }
 
-    // Approve: Create a poet (if needed) and poem, then update submission
+    // Approve: Create an author (if needed) and work, then update submission
 
-    // First, check if we need to create a poet or find existing
-    let poet = await prisma.poet.findFirst({
+    // First, check if we need to create an author or find existing
+    let author = await prisma.author.findFirst({
       where: { name: submission.authorName }
     })
 
-    if (!poet) {
-      // Create a new poet
+    if (!author) {
+      // Create a new author
       const slug = submission.authorName
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
         .replace(/-+/g, '-')
         .trim()
 
-      poet = await prisma.poet.create({
+      author = await prisma.author.create({
         data: {
           name: submission.authorName,
           slug: `${slug}-${Date.now()}`,
@@ -92,23 +92,25 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Create the poem
-    const poemSlug = submission.title
+    // Create the work
+    const workSlug = submission.title
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .trim()
 
-    const poem = await prisma.poem.create({
+    const work = await prisma.work.create({
       data: {
         title: submission.title,
         content: submission.content,
-        slug: `${poemSlug}-${Date.now()}`,
+        slug: `${workSlug}-${Date.now()}`,
         language: submission.language,
-        poetId: poet.id,
+        authorId: author.id,
         published: true,
         publishedAt: new Date(),
+        type: submission.type || 'POEM', // Use submitted type or default
+        renderingConfig: renderingConfig || undefined,
       }
     })
 
@@ -118,16 +120,16 @@ export async function POST(request: NextRequest) {
       data: {
         status: 'APPROVED',
         reviewedAt: new Date(),
-        approvedPoemId: poem.id
+        approvedWorkId: work.id
       }
     })
 
-    console.log('Poem published:', poem.id)
+    console.log('Work published:', work.id)
 
     return NextResponse.json({
       success: true,
-      message: 'Poem published successfully',
-      poemId: poem.id
+      message: 'Work published successfully',
+      workId: work.id
     })
 
   } catch (error) {

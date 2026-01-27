@@ -3,41 +3,41 @@ import type { Locale } from '@/i18n.config'
 import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
 import { prisma } from '@/lib/db'
-import PoetList from '@/components/poets/PoetList'
-import type { Poet } from '@/lib/generated/prisma'
+import AuthorList from '@/components/authors/AuthorList'
+import type { Author } from '@/lib/generated/prisma'
 
-async function getPoets(): Promise<Poet[]> {
+async function getAuthors(): Promise<Author[]> {
   try {
-    const poets = await prisma.poet.findMany({
+    const authors = await prisma.author.findMany({
       orderBy: {
         name: 'asc'
       }
     })
-    return poets
+    return authors
   } catch (error) {
-    console.error('Failed to fetch poets:', error)
+    console.error('Failed to fetch authors:', error)
     return []
   }
 }
 
-export default async function PoetsPage({
+export default async function AuthorsPage({
   params: { locale }
 }: {
   params: { locale: Locale }
 }) {
   const dictionary = await getDictionary(locale)
-  const poets = await getPoets()
+  const authors = await getAuthors()
 
   const pageTitle = {
-    de: 'Unsere Dichter',
-    en: 'Our Poets',
-    ru: 'Наши поэты'
+    de: 'Unsere Autoren',
+    en: 'Our Authors',
+    ru: 'Наши авторы'
   }
 
   const pageSubtitle = {
-    de: 'Die Stimmen hinter den Versen',
-    en: 'The voices behind the verses',
-    ru: 'Голоса за строками'
+    de: 'Die Stimmen hinter den Werken',
+    en: 'The voices behind the works',
+    ru: 'Голоса за произведениями'
   }
 
   return (
@@ -62,17 +62,17 @@ export default async function PoetsPage({
 
         {/* Decorative elements */}
         <div className="absolute top-40 left-10 text-vertical-rl text-ink-black/10 font-serif text-6xl select-none hidden lg:block">
-          DICHTER
+          AUTOREN
         </div>
         <div className="absolute bottom-10 right-10 text-vertical-rl text-ink-black/10 font-serif text-6xl select-none hidden lg:block">
-          ПОЭТЫ
+          АВТОРЫ
         </div>
       </section>
 
-      {/* Poets List */}
+      {/* Authors List */}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
-          <PoetList poets={poets} locale={locale} />
+          <AuthorList authors={authors} locale={locale} />
         </div>
       </section>
 

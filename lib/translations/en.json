@@ -11,25 +11,25 @@
   },
   "navigation": {
     "home": "Home",
-    "poems": "Poems",
-    "poets": "Poets",
+    "works": "Works",
+    "authors": "Authors",
     "about": "About",
-    "submit": "Submit Poetry",
+    "submit": "Submit Work",
     "contact": "Contact"
   },
   "homepage": {
     "hero": {
       "title": "Where words bleed ink",
-      "subtitle": "A sanctuary for poetry in three tongues",
-      "cta": "Explore Poetry",
+      "subtitle": "A sanctuary for literature in three tongues",
+      "cta": "Explore Works",
       "scroll": "Scroll to discover"
     },
     "featured": {
-      "title": "Featured Poems",
-      "viewAll": "View all poems"
+      "title": "Featured Works",
+      "viewAll": "View all works"
     }
   },
-  "poems": {
+  "works": {
     "filters": {
       "all": "All",
       "byLanguage": "By Language",
@@ -52,23 +52,23 @@
     },
     "readMore": "Read more",
     "readLess": "Read less",
-    "listenTo": "Listen to poem",
+    "listenTo": "Listen",
     "share": "Share",
     "by": "by"
   },
   "submit": {
-    "title": "Submit Your Poetry",
+    "title": "Submit Your Work",
     "guidelines": "Submission Guidelines",
     "form": {
-      "title": "Poem Title",
+      "title": "Title",
       "author": "Author Name",
       "language": "Language",
-      "content": "Your Poem",
+      "content": "Your Work",
       "tags": "Tags (comma separated)",
       "email": "Contact Email",
-      "submit": "Submit Poem",
-      "success": "Your poem has been submitted successfully",
-      "error": "Failed to submit poem. Please try again."
+      "submit": "Submit Work",
+      "success": "Your work has been submitted successfully",
+      "error": "Failed to submit work. Please try again."
     }
   },
   "footer": {

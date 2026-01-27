@@ -9,7 +9,7 @@ function getLocale(request: NextRequest): string | undefined {
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
 
   const locales = [...i18n.locales]
-  
+
   try {
     const languages = new Negotiator({ headers: negotiatorHeaders }).languages()
     const locale = matchLocale(languages, locales, i18n.defaultLocale)
@@ -30,6 +30,22 @@ export function middleware(request: NextRequest) {
     pathname.includes('.') // Skip files with extensions
   ) {
     return
+  }
+
+  // Admin Protection
+  if (pathname.includes('/admin')) {
+    const adminToken = request.cookies.get('admin_token')
+
+    // In production, check for a secure token. 
+    // Ideally this token matches an ENV var.
+    // For now, we redirect to a login page if not present.
+    if (!adminToken) {
+      // Redirect to login if trying to access admin
+      // Using 307 to preserve method if needed, but here simple redirect is fine
+      const url = request.nextUrl.clone()
+      url.pathname = `/${getLocale(request)}/login`
+      return NextResponse.redirect(url)
+    }
   }
 
   // Check if there is any supported locale in the pathname

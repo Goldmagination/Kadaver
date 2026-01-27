@@ -5,20 +5,24 @@ import { prisma } from '@/lib/db'
 import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
+import WorkReader from '@/components/works/WorkReader'
 
-interface PoemPageProps {
+interface WorkPageProps {
   params: {
     locale: Locale
     slug: string
   }
 }
 
-async function getPoem(slug: string) {
+async function getWork(slug: string) {
   try {
-    const poem = await prisma.poem.findUnique({
+    const work = await prisma.work.findUnique({
       where: { slug },
       include: {
-        poet: true,
+        author: true,
+        chapters: {
+          orderBy: { order: 'asc' }
+        },
         tags: {
           include: {
             tag: true
@@ -26,18 +30,18 @@ async function getPoem(slug: string) {
         }
       }
     })
-    return poem
+    return work
   } catch (error) {
-    console.error('Failed to fetch poem:', error)
+    console.error('Failed to fetch work:', error)
     return null
   }
 }
 
-export default async function PoemPage({ params: { locale, slug } }: PoemPageProps) {
+export default async function WorkPage({ params: { locale, slug } }: WorkPageProps) {
   const dictionary = await getDictionary(locale)
-  const poem = await getPoem(slug)
+  const work = await getWork(slug)
 
-  if (!poem || !poem.published) {
+  if (!work || !work.published) {
     notFound()
   }
 
@@ -51,55 +55,51 @@ export default async function PoemPage({ params: { locale, slug } }: PoemPagePro
     <main className="min-h-screen">
       <Navigation locale={locale} dictionary={dictionary} />
 
-      {/* Poem Header */}
+      {/* Work Header */}
       <section className="relative pt-32 pb-16 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-paper via-paper/95 to-paper/90" />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <span className="inline-block px-3 py-1 text-xs font-mono text-ink-black/60 uppercase mb-4 border border-ink-black/20">
-            {poem.language}
+            {work.language}
           </span>
 
           <h1 className="text-4xl md:text-6xl font-serif font-bold text-ink-black mb-6">
-            {poem.title}
+            {work.title}
           </h1>
 
           <div className="w-20 h-1 bg-blood-red mx-auto mb-6" />
 
           <p className="text-xl text-ink-black/70 font-sans">
-            {dictionary.poems.by}{' '}
+            {dictionary.works.by}{' '}
             <Link
-              href={`/${locale}/poets/${poem.poet.slug}`}
+              href={`/${locale}/authors/${work.author.slug}`}
               className="text-blood-red hover:text-ink-black transition-colors"
             >
-              {poem.poet.name}
+              {work.author.name}
             </Link>
           </p>
 
-          {poem.year && (
-            <p className="text-sm text-ink-black/50 mt-2">{poem.year}</p>
+          {work.year && (
+            <p className="text-sm text-ink-black/50 mt-2">{work.year}</p>
           )}
         </div>
 
         {/* Decorative elements */}
         <div className="absolute top-40 left-10 text-vertical-rl text-ink-black/5 font-serif text-8xl select-none hidden lg:block">
-          {poem.title.substring(0, 10)}
+          {work.title.substring(0, 10)}
         </div>
       </section>
 
-      {/* Poem Content */}
+      {/* Work Content */}
       <section className="py-16 px-6">
         <div className="max-w-3xl mx-auto">
-          <article className="brutalist-border bg-paper p-8 md:p-12">
-            <pre className="font-serif text-lg md:text-xl text-ink-black leading-relaxed whitespace-pre-wrap">
-              {poem.content}
-            </pre>
-          </article>
+          <WorkReader work={work} locale={locale} />
 
           {/* Tags */}
-          {poem.tags && poem.tags.length > 0 && (
+          {work.tags && work.tags.length > 0 && (
             <div className="flex flex-wrap gap-3 mt-8 justify-center">
-              {poem.tags.map((t) => (
+              {work.tags.map((t) => (
                 <span
                   key={t.tag.slug}
                   className="px-4 py-2 text-sm font-sans bg-ink-black/10 text-ink-black hover:bg-blood-red hover:text-paper transition-colors cursor-pointer"
@@ -111,29 +111,29 @@ export default async function PoemPage({ params: { locale, slug } }: PoemPagePro
           )}
 
           {/* Audio Player */}
-          {poem.audioUrl && (
+          {work.audioUrl && (
             <div className="mt-12 brutalist-border p-6 bg-ink-black/5">
               <p className="text-sm text-ink-black/60 mb-4 font-sans">
-                {dictionary.poems.listenTo}
-                {poem.audioReader && ` • ${poem.audioReader}`}
+                {dictionary.works.listenTo}
+                {work.audioReader && ` • ${work.audioReader}`}
               </p>
               <audio controls className="w-full">
-                <source src={poem.audioUrl} type="audio/mpeg" />
+                <source src={work.audioUrl} type="audio/mpeg" />
               </audio>
             </div>
           )}
 
           {/* Source */}
-          {poem.source && (
+          {work.source && (
             <p className="text-center text-sm text-ink-black/50 mt-8 italic">
-              {poem.source}
+              {work.source}
             </p>
           )}
 
           {/* Back Link */}
           <div className="text-center mt-12">
             <Link
-              href={`/${locale}/poems`}
+              href={`/${locale}/works`}
               className="inline-block brutalist-border px-6 py-3 bg-ink-black text-paper hover:bg-blood-red transition-colors font-medium"
             >
               ← {dictionary.homepage.featured.viewAll}
@@ -142,32 +142,32 @@ export default async function PoemPage({ params: { locale, slug } }: PoemPagePro
         </div>
       </section>
 
-      {/* Poet Info */}
-      {poem.poet.bio && (
+      {/* Author Info */}
+      {work.author.bio && (
         <section className="py-16 px-6 bg-ink-black/5">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl font-serif font-bold text-ink-black mb-4">
-              {locale === 'de' && 'Über den Dichter'}
-              {locale === 'en' && 'About the Poet'}
-              {locale === 'ru' && 'О поэте'}
+              {locale === 'de' && 'Über den Autor'}
+              {locale === 'en' && 'About the Author'}
+              {locale === 'ru' && 'Об авторе'}
             </h2>
             <div className="brutalist-border bg-paper p-6">
               <h3 className="text-xl font-serif font-bold text-ink-black mb-2">
-                {poem.poet.name}
-                {poem.poet.nameOriginal && (
-                  <span className="text-ink-black/60 ml-2">({poem.poet.nameOriginal})</span>
+                {work.author.name}
+                {work.author.nameOriginal && (
+                  <span className="text-ink-black/60 ml-2">({work.author.nameOriginal})</span>
                 )}
               </h3>
-              {poem.poet.birthYear && (
+              {work.author.birthYear && (
                 <p className="text-sm text-ink-black/60 mb-4">
-                  {poem.poet.birthYear}{poem.poet.deathYear ? ` — ${poem.poet.deathYear}` : ''}
+                  {work.author.birthYear}{work.author.deathYear ? ` — ${work.author.deathYear}` : ''}
                 </p>
               )}
               <p className="text-ink-black/80 font-sans">
-                {locale === 'de' && poem.poet.bioDe ? poem.poet.bioDe :
-                 locale === 'ru' && poem.poet.bioRu ? poem.poet.bioRu :
-                 locale === 'en' && poem.poet.bioEn ? poem.poet.bioEn :
-                 poem.poet.bio}
+                {locale === 'de' && work.author.bioDe ? work.author.bioDe :
+                  locale === 'ru' && work.author.bioRu ? work.author.bioRu :
+                    locale === 'en' && work.author.bioEn ? work.author.bioEn :
+                      work.author.bio}
               </p>
             </div>
           </div>

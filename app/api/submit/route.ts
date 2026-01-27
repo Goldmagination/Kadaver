@@ -23,7 +23,7 @@ async function getOrCreateAnonymousUser(email: string) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { title, author, language, content, tags, email } = body
+    const { title, author, language, content, tags, email, type, chapters } = body
 
     // Validate required fields
     if (!title || !author || !language || !content || !email) {
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
           authorName: author,
           language: language.toLowerCase() as 'de' | 'en' | 'ru',
           content,
+          type: type || 'POEM', // Default to POEM if not specified
+          chapters: (type === 'NOVEL' && chapters) ? chapters : undefined,
           submitterId: user.id,
           status: 'PENDING',
         },
@@ -62,7 +64,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          message: 'Poem submitted successfully',
+          message: 'Work submitted successfully',
           id: submission.id
         },
         { status: 201 }
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Submission error:', error)
     return NextResponse.json(
-      { error: 'Failed to submit poem' },
+      { error: 'Failed to submit work' },
       { status: 500 }
     )
   }

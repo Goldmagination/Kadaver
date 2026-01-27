@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import type { Locale } from '@/i18n.config'
+import Link from 'next/link'
+import ChapterEditor from '@/components/works/ChapterEditor'
 import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
 
@@ -26,6 +28,8 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
     content: '',
     tags: '',
     email: '',
+    type: 'POEM',
+    chapters: [] as any[], // Add chapters array
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -84,6 +88,8 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
         content: '',
         tags: '',
         email: '',
+        type: 'POEM',
+        chapters: [],
       })
     } catch {
       setSubmitStatus('error')
@@ -249,6 +255,28 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
               />
             </div>
 
+            {/* Work Type */}
+            <div className="group">
+              <label
+                htmlFor="type"
+                className="block text-lg font-serif font-bold text-ink-black mb-2"
+              >
+                {/* Fallback label if translation missing */}
+                {locale === 'de' ? 'Art des Werkes' : locale === 'ru' ? 'Тип произведения' : 'Type of Work'}
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type || 'POEM'}
+                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
+                className="w-full px-4 py-3 bg-paper border-b-2 border-ink-black/30 focus:border-blood-red outline-none transition-colors font-sans text-ink-black cursor-pointer"
+              >
+                <option value="POEM">{locale === 'de' ? 'Gedicht' : locale === 'ru' ? 'Стихотворение' : 'Poem'}</option>
+                <option value="TALE">{locale === 'de' ? 'Erzählung' : locale === 'ru' ? 'Рассказ' : 'Tale'}</option>
+                <option value="NOVEL">{locale === 'de' ? 'Roman' : locale === 'ru' ? 'Роман' : 'Novel'}</option>
+              </select>
+            </div>
+
             {/* Language */}
             <div className="group">
               <label
@@ -272,29 +300,42 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
               </select>
             </div>
 
-            {/* Content */}
-            <div className="group">
-              <label
-                htmlFor="content"
-                className="block text-lg font-serif font-bold text-ink-black mb-2"
-              >
-                {dictionary.submit.form.content}
-              </label>
-              <textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                required
-                rows={12}
-                className="w-full px-4 py-3 bg-paper brutalist-border focus:shadow-none outline-none transition-all font-serif text-ink-black resize-none"
-                placeholder={locale === 'de'
-                  ? 'Schreiben Sie hier Ihr Gedicht...\n\nBehalten Sie die Formatierung bei,\nwie Sie sie wünschen.'
-                  : locale === 'ru'
-                  ? 'Напишите здесь свое стихотворение...\n\nСохраняйте форматирование,\nкак вам нужно.'
-                  : 'Write your poem here...\n\nPreserve formatting\nas you wish.'}
-              />
-            </div>
+            {/* Content or Chapter Editor */}
+            {formData.type === 'NOVEL' ? (
+              <div className="group">
+                <label className="block text-lg font-serif font-bold text-ink-black mb-2">
+                  {dictionary.submit.form.content}
+                </label>
+                <ChapterEditor
+                  chapters={formData.chapters || [{ id: '1', title: '', content: '' }]}
+                  onChange={(newChapters) => setFormData(prev => ({ ...prev, chapters: newChapters }))}
+                  locale={locale}
+                />
+              </div>
+            ) : (
+              <div className="group">
+                <label
+                  htmlFor="content"
+                  className="block text-lg font-serif font-bold text-ink-black mb-2"
+                >
+                  {dictionary.submit.form.content}
+                </label>
+                <textarea
+                  id="content"
+                  name="content"
+                  value={formData.content}
+                  onChange={handleChange}
+                  required={formData.type !== 'NOVEL'}
+                  rows={12}
+                  className="w-full px-4 py-3 bg-paper brutalist-border focus:shadow-none outline-none transition-all font-serif text-ink-black resize-none"
+                  placeholder={locale === 'de'
+                    ? 'Schreiben Sie hier Ihr Gedicht...\n\nBehalten Sie die Formatierung bei,\nwie Sie sie wünschen.'
+                    : locale === 'ru'
+                      ? 'Напишите здесь свое стихотворение...\n\nСохраняйте форматирование,\nкак вам нужно.'
+                      : 'Write your poem here...\n\nPreserve formatting\nas you wish.'}
+                />
+              </div>
+            )}
 
             {/* Tags */}
             <div className="group">
