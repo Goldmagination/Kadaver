@@ -14,7 +14,7 @@ const content = {
   de: {
     title: 'Über Kadaver',
     subtitle: 'Eine literarische Gesellschaft',
-    intro: 'Kadaver ist mehr als eine Website – es ist ein lebendiges Archiv der Literatur, ein Ort, an dem Worte atmen und Werke unsterblich werden.',
+    intro: 'Kadaver ist ein lebendiges Archiv der Literatur — ein Ort, an dem Worte zur Ruhe gebettet werden.',
     sections: [
       {
         title: 'Unsere Mission',
@@ -35,7 +35,7 @@ const content = {
   en: {
     title: 'About Kadaver',
     subtitle: 'A Literary Society',
-    intro: 'Kadaver is a living archive of literature, a place where words breathe and works become immortal.',
+    intro: 'Kadaver is a living archive of literature, a place where words are put to rest.',
     sections: [
       {
         title: 'Our Mission',
@@ -56,7 +56,7 @@ const content = {
   ru: {
     title: 'О Кадавере',
     subtitle: 'Литературное общество',
-    intro: 'Кадавер — это живой литературный архив, место, где слова дышат, а произведения становятся бессмертными.',
+    intro: 'Кадавер — это живой архив литературы, место, где слова обретают вечный покой.',
     sections: [
       {
         title: 'Наша миссия',
