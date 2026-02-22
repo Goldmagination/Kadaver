@@ -31,13 +31,15 @@ export default async function AuthorsPage({
   const pageTitle = {
     de: 'Unsere Autoren',
     en: 'Our Authors',
-    ru: 'Наши авторы'
+    ru: 'Наши авторы',
+    uk: 'Наші автори'
   }
 
   const pageSubtitle = {
     de: 'Die Stimmen hinter den Werken',
     en: 'The voices behind the works',
-    ru: 'Голоса за произведениями'
+    ru: 'Голоса за произведениями',
+    uk: 'Голоси за творами'
   }
 
   return (

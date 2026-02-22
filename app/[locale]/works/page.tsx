@@ -76,13 +76,15 @@ export default function WorksPage({ params: { locale } }: WorksPageProps) {
   const pageTitle = {
     de: 'Alle Werke',
     en: 'All Works',
-    ru: 'Все произведения'
+    ru: 'Все произведения',
+    uk: 'Усі твори'
   }
 
   const pageSubtitle = {
     de: 'Eine Sammlung von literarischen Werken in drei Sprachen',
     en: 'A collection of literary works in three tongues',
-    ru: 'Коллекция литературных произведений на трех языках'
+    ru: 'Коллекция литературных произведений на трех языках',
+    uk: 'Збірка літературних творів кількома мовами'
   }
 
   if (!dictionary) {
@@ -151,8 +153,8 @@ export default function WorksPage({ params: { locale } }: WorksPageProps) {
                 key={item.key}
                 onClick={() => setFilter(item.key as typeof filter)}
                 className={`px-6 py-2 font-sans text-sm transition-all duration-300 ${filter === item.key
-                    ? 'bg-ink-black text-paper'
-                    : 'bg-transparent text-ink-black border border-ink-black/30 hover:border-ink-black'
+                  ? 'bg-ink-black text-paper'
+                  : 'bg-transparent text-ink-black border border-ink-black/30 hover:border-ink-black'
                   }`}
               >
                 {item.label}
@@ -175,11 +177,13 @@ export default function WorksPage({ params: { locale } }: WorksPageProps) {
                 {locale === 'de' && 'Noch keine Werke veröffentlicht.'}
                 {locale === 'en' && 'No works published yet.'}
                 {locale === 'ru' && 'Произведения пока не опубликованы.'}
+                {locale === 'uk' && 'Твори ще не опубліковано.'}
               </p>
               <p className="text-ink-black/40 font-sans">
                 {locale === 'de' && 'Reichen Sie Ihr Werk ein!'}
                 {locale === 'en' && 'Submit your work!'}
                 {locale === 'ru' && 'Присылайте свои работы!'}
+                {locale === 'uk' && 'Надсилайте свої твори!'}
               </p>
             </div>
           ) : (
