@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   try {
     const { submissionId, action, renderingConfig } = await request.json()
 
-    if (!submissionId || !['approve', 'reject'].includes(action)) {
+    if (!submissionId || !['approve', 'reject', 'delete'].includes(action)) {
       return NextResponse.json(
         { error: 'Invalid request' },
         { status: 400 }
@@ -65,6 +65,15 @@ export async function POST(request: NextRequest) {
       })
 
       return NextResponse.json({ success: true, message: 'Submission rejected' })
+    }
+
+    if (action === 'delete') {
+      // Delete the submission
+      await prisma.submission.delete({
+        where: { id: submissionId }
+      })
+
+      return NextResponse.json({ success: true, message: 'Submission deleted' })
     }
 
     // Approve: Create an author (if needed) and work, then update submission

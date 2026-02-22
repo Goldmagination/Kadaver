@@ -666,6 +666,9 @@ h1, h2, h3, h4, h5, h6{
 .mr-3{
   margin-right: 0.75rem;
 }
+.mr-auto{
+  margin-right: auto;
+}
 .mt-1{
   margin-top: 0.25rem;
 }
@@ -1386,6 +1389,11 @@ h1, h2, h3, h4, h5, h6{
   border-color: rgb(10 10 10 / var(--tw-border-opacity, 1));
 }
 
+.hover\:border-red-900:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(127 29 29 / var(--tw-border-opacity, 1));
+}
+
 .hover\:bg-blood-red:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(139 0 0 / var(--tw-bg-opacity, 1));
@@ -1413,6 +1421,11 @@ h1, h2, h3, h4, h5, h6{
   background-color: rgb(10 10 10 / 0.1);
 }
 
+.hover\:bg-red-900:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(127 29 29 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:text-blood-red:hover{
   --tw-text-opacity: 1;
   color: rgb(139 0 0 / var(--tw-text-opacity, 1));
@@ -1431,6 +1444,11 @@ h1, h2, h3, h4, h5, h6{
 .hover\:text-paper:hover{
   --tw-text-opacity: 1;
   color: rgb(250 250 248 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-white:hover{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
 .hover\:opacity-100:hover{
@@ -1536,10 +1554,6 @@ h1, h2, h3, h4, h5, h6{
   .md\:text-8xl{
     font-size: 6rem;
     line-height: 1;
-  }
-  .md\:text-xl{
-    font-size: 1.25rem;
-    line-height: 1.75rem;
   }
 }
 

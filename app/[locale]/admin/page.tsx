@@ -70,7 +70,7 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
     }
   }
 
-  const handleAction = async (submissionId: string, action: 'approve' | 'reject') => {
+  const handleAction = async (submissionId: string, action: 'approve' | 'reject' | 'delete') => {
     setActionLoading(submissionId)
     try {
       const res = await fetch('/api/admin/submissions', {
@@ -287,6 +287,18 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
                         </details>
 
                         <div className="flex gap-4 justify-end">
+                          <button
+                            onClick={() => {
+                              if (confirm('Are you sure you want to delete this submission? This cannot be undone.')) {
+                                handleAction(submission.id, 'delete')
+                              }
+                            }}
+                            disabled={actionLoading === submission.id}
+                            className="px-4 py-2 border-2 border-ink-black/20 text-ink-black/50 hover:bg-red-900 hover:text-white hover:border-red-900 transition-colors disabled:opacity-50 text-sm font-mono mr-auto"
+                          >
+                            DELETE
+                          </button>
+
                           <button
                             onClick={() => handleAction(submission.id, 'reject')}
                             disabled={actionLoading === submission.id}
