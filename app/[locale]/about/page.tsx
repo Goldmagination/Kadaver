@@ -26,7 +26,7 @@ const content = {
       },
       {
         title: 'Für Autoren',
-        content: 'Kadaver ist offen für alle, die ihre Stimme teilen möchten. Ob etablierter Schriftsteller oder aufstrebendes Talent – hier finden Ihre Worte ein Zuhause. Reichen Sie Ihre Arbeiten ein und werden Sie Teil unserer wachsenden Gemeinschaft.'
+        content: 'Kadaver steht allen offen, die ihre Werke teilen möchten. Keine vorgegebenen Themen, keine Algorithmen und keine Zensur — wir versuchen, das rohste Leseerlebnis zu bieten, das es gibt. Du kannst ein etablierter Schriftsteller sein, ein aufstrebendes Talent oder ein kompletter Versager — was kümmert uns das? Wir haben nur eine (schwindende) Hoffnung: Wenn sich genug Autoren in einer stechenden und brodelnden Suppe aus Worten und Ideen zusammenfinden, gibt es vielleicht — nur vielleicht — genug Material, das wir drucken und veröffentlichen können.'
       }
     ],
     quote: 'block block block ich bin Schriftsteller Blok.',
@@ -47,7 +47,7 @@ const content = {
       },
       {
         title: 'For Authors',
-        content: 'Kadaver is open to all who wish to share their voice. Whether established writer or emerging talent – your words find a home here. Submit your works and become part of our growing community.'
+        content: 'Kadaver is open to all who wish to share their works. No preselected topics, no algorithms and no censorship — we try to provide the rawest reading experience there is. You can be an established writer, an emerging talent, or a complete failure — what do we care? We have but one (dwindling) hope: if enough authors come together in a pungent and bubbling soup of words and ideas, maybe — just maybe — there will be enough material to print and publish.'
       }
     ],
     quote: 'block block block I am writer Blok.',
@@ -68,7 +68,7 @@ const content = {
       },
       {
         title: 'Для авторов',
-        content: 'Кадавер открыт для всех, кто хочет поделиться своим голосом. Будь вы прозаик, поэт или эссеист — ваши слова найдут здесь дом. Присылайте свои работы и станьте частью нашего растущего сообщества.'
+        content: 'Кадавер открыт для всех, кто хочет поделиться своими работами. Никаких заранее заданных тем, никаких алгоритмов и никакой цензуры — мы стараемся дать самый нефильтрованный читательский опыт из возможных. Вы можете быть состоявшимся писателем, восходящим талантом или полным неудачником — нам всё равно. У нас есть лишь одна (угасающая) надежда: если достаточно авторов соберётся в едкий и булькающий бульон из слов и идей, возможно — только возможно — материала хватит, чтобы напечатать и издать.'
       }
     ],
     quote: 'Блок-блок-блок-блок-блок. Я писатель Блок.',
@@ -89,7 +89,7 @@ const content = {
       },
       {
         title: 'Для авторів',
-        content: 'Кадавер відкритий для всіх, хто хоче поділитися своїм голосом. Будь ви прозаїк, поет чи есеїст — ваші слова знайдуть тут дім. Надсилайте свої роботи і ставайте частиною нашої спільноти, що зростає.'
+        content: 'Кадавер відкритий для всіх, хто бажає поділитися своїми творами. Жодних наперед заданих тем, жодних алгоритмів і жодної цензури — ми прагнемо забезпечити найбільш неопосередкований читацький досвід з усіх можливих. Ви можете бути визнаним письменником, талантом-початківцем чи повним невдахою — нам байдуже. У нас є лише одна (зменшувана) надія: якщо достатньо авторів зібреться в їдкому і киплячому бульйоні зі слів та ідей, можливо — тільки можливо — матеріалу вистачить, щоб його надрукувати та видати.'
       }
     ],
     quote: 'Блок-блок-блок-блок-блок. Я письменник Блок.',
