@@ -22,7 +22,7 @@ const content = {
       },
       {
         title: 'Der Name',
-        content: 'Kadaver – ein provokanter Name für ein literarisches Projekt. Wie der Exquisite Corpse der Surrealisten entsteht hier Kunst aus dem Unerwarteten. Jeder Text ist ein Fragment eines größeren Ganzen, jeder Autor trägt zum kollektiven Körper der Literatur bei.'
+        content: 'Kadaver ist die deutsche Schreibweise des Wortes für eine Leiche — insbesondere eine, die zur Sektion bestimmt ist. Die Idee entstand in Hamburg als Antwort auf eine erschüternde Tatsache: Die meisten Dichter, Verleger, Literaturzeitschriften und Gesellschaften sind tot. Wir leben in einer Welt, in der tiefe Gedanken, unbequeme Ideen und experimentelle Ansätze von der Kultur des Massenkonsums begraben werden. Ja, wir wissen es. Dennoch muss es jemanden geben, der Gräber ausgräbt, die niemand besucht, Homilien hält, denen niemand beiwohnt, und armselige Leichenschmäuse ausrichtet, bei denen der Verstorbene nicht einmal erwähnt wird.'
       },
       {
         title: 'Für Autoren',
@@ -43,7 +43,7 @@ const content = {
       },
       {
         title: 'The Name',
-        content: 'Kadaver – a provocative name for a literary project. Like the Exquisite Corpse of the Surrealists, art emerges here from the unexpected. Each text is a fragment of a greater whole, each author contributes to the collective body of literature.'
+        content: 'Kadaver is the German spelling of the word cadaver — a dead body, especially one intended for dissection. The idea was born in Hamburg, Germany, as a response to an appalling fact: most poets, publishers, literary magazines and societies are dead. We live in a world where deep thoughts, uncomfortable ideas and experimental approaches are buried by the culture of mass consumerism. Hell, we get it. Still, there must be someone to dig up the graves that no one visits, to deliver homilies that no one attends, and to organise poor repasts where no one will even mention the deceased.'
       },
       {
         title: 'For Authors',
@@ -64,7 +64,7 @@ const content = {
       },
       {
         title: 'Название',
-        content: 'Кадавер — провокационное название для литературного проекта. Как «Изысканный труп» сюрреалистов, здесь искусство рождается из неожиданного. Каждый текст — фрагмент большего целого, каждый автор вносит вклад в коллективное тело литературы.'
+        content: 'Кадавер — немецкое написание слова «кадавр», труп, особенно предназначенный для вскрытия. Идея родилась в Гамбурге как ответ на удручающий факт: большинство поэтов, издателей, литературных журналов и обществ мертвы. Мы живём в мире, где глубокие мысли, неудобные идеи и экспериментальные подходы погребаются под культурой массового потребления. Что ж, мы это понимаем. Тем не менее должен найтись тот, кто раскопает могилы, которые никто не навещает, произносит надгробные речи, которые никто не придёт услышать, и устроит скромные поминки, где усопшего никто даже не вспомнит.'
       },
       {
         title: 'Для авторов',
@@ -85,7 +85,7 @@ const content = {
       },
       {
         title: 'Назва',
-        content: 'Кадавер — провокаційна назва для літературного проекту. Як «Вишуканий труп» сюрреалістів, тут мистецтво народжується з несподіваного. Кожен текст — фрагмент більшого цілого, кожен автор робить внесок у колективне тіло літератури.'
+        content: 'Кадавер — це німецьке написання слова «кадавр», мрець, особливо той, що призначений для розтину. Ідея народилася в Гамбурзі як відповідь на жахливий факт: більшість поетів, видавців, літературних журналів і товариств мертві. Ми живемо у світі, де глибокі думки, незручні ідеї та експериментальні підходи поховані культурою масового споживання. Що ж, ми це розуміємо. Проте мусить знайтися хтось, хто розкопує могили, яких ніхто не відвідує, виголошує надгробні промови, яких ніхто не чує, і влаштовує скромні поминки, де небіжчика навіть не згадають.'
       },
       {
         title: 'Для авторів',
