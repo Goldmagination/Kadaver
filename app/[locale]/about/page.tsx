@@ -18,7 +18,7 @@ const content = {
     sections: [
       {
         title: 'Unsere Mission',
-        content: 'Wir glauben, dass Literatur keine Grenzen kennt. In einer Welt, die immer schneller wird, schaffen wir einen Raum der Stille, in dem jedes Wort zählt. Kadaver vereint Texte in Deutsch, Russisch und Englisch – drei Sprachen, drei Kulturen, eine universelle Sprache der Seele.'
+        content: 'Ideen sind leblose Überreste. Worte sind der Sarg. In einer Welt, in der das Originelle nur entsteht, um vergessen zu werden, muss es einen Ort geben, an dem Ideen zur Ruhe kommen. Unsere Mission ist es, ein freies, zugängliches, vielsprachiges Archiv für alle bereitzustellen, die das Schreiben lieben. Hinterlasse deine Werke bei uns und kehre jederzeit zurück, um sie zu besuchen. Entdecke die Werke anderer Schaffender — talentiert und weniger talentiert. Spielt das am Ende eine Rolle? Es ist alles nur ein Experiment.'
       },
       {
         title: 'Der Name',
@@ -39,7 +39,7 @@ const content = {
     sections: [
       {
         title: 'Our Mission',
-        content: 'We believe that literature knows no borders. In a world that moves ever faster, we create a space of stillness where every word matters. Kadaver unites works in German, Russian, and English – three languages, three cultures, one universal language of the soul.'
+        content: 'Ideas are lifeless remains. Words are the casket. In a world where originality is born only to be forgotten, there must be a place where ideas come to rest. Our mission is to provide a free, accessible, all-language archive for those who love writing. Leave your works with us and return whenever you wish to visit them. Discover the works of other creators — talented and not so talented alike. Does it matter, in the end? It is all just an experiment.'
       },
       {
         title: 'The Name',
@@ -60,7 +60,7 @@ const content = {
     sections: [
       {
         title: 'Наша миссия',
-        content: 'Мы верим, что литература не знает границ. В мире, который движется всё быстрее, мы создаём пространство тишины, где важно каждое слово. Кадавер объединяет тексты на немецком, русском и английском — три языка, три культуры, один универсальный язык души.'
+        content: 'Идеи — это безжизненные останки. Слова — это гроб. В мире, где оригинальное рождается лишь для того, чтобы быть забытым, должно существовать место, где идеи могут упокоиться. Наша миссия — предоставить свободный, доступный, многоязычный архив для всех, кто любит писать. Оставьте свои работы у нас и возвращайтесь в любое время, чтобы навестить их. Открывайте произведения других авторов — талантливых и не очень. Имеет ли это значение в конце концов? Всё это лишь эксперимент.'
       },
       {
         title: 'Название',
