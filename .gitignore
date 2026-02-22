@@ -30,3 +30,7 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# Gemini Clipboard
+.gemini-clipboard/
+

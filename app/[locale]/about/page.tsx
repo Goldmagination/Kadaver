@@ -27,6 +27,10 @@ const content = {
       {
         title: 'Für Autoren',
         content: 'Kadaver steht allen offen, die ihre Werke teilen möchten. Keine vorgegebenen Themen, keine Algorithmen und keine Zensur — wir versuchen, das rohste Leseerlebnis zu bieten, das es gibt. Du kannst ein etablierter Schriftsteller sein, ein aufstrebendes Talent oder ein kompletter Versager — was kümmert uns das? Wir haben nur eine (schwindende) Hoffnung: Wenn sich genug Autoren in einer stechenden und brodelnden Suppe aus Worten und Ideen zusammenfinden, gibt es vielleicht — nur vielleicht — genug Material, das wir drucken und veröffentlichen können.'
+      },
+      {
+        title: 'Die Gründerväter',
+        content: 'Wir sind festum taxi et pluma — eine kleine Gruppe von Dichtern, die an die Auferstehung der Literatur glaubt. Es gab einmal ein Goldenes Zeitalter, ein Silbernes Zeitalter und vielleicht sogar ein Bronzenes Zeitalter der Dichtung. Doch heute leben wir unbestreitbar in der Eiszeit. Zeitgenössische Dichter schlagen Worte aneinander in der Hoffnung, emotionale Feuer zu entfachen. Wir denken über diese primitiven Methoden hinaus. Es ist Zeit für das Zeitalter der hölzernen Dichtung — wo Flüsse aus Worten rastlos und kalt strömen und Reimgebirge über sanfte Wiesen der Bedeutung aufragen. Die Musik der Zukunft wurde bereits vor langer Zeit gespielt und vergessen. Wir sind diejenigen, die sie wiederbeleben werden.'
       }
     ],
     quote: 'block block block ich bin Schriftsteller Blok.',
@@ -48,6 +52,10 @@ const content = {
       {
         title: 'For Authors',
         content: 'Kadaver is open to all who wish to share their works. No preselected topics, no algorithms and no censorship — we try to provide the rawest reading experience there is. You can be an established writer, an emerging talent, or a complete failure — what do we care? We have but one (dwindling) hope: if enough authors come together in a pungent and bubbling soup of words and ideas, maybe — just maybe — there will be enough material to print and publish.'
+      },
+      {
+        title: 'The Founding Fathers',
+        content: 'We are festum taxi et pluma — a small group of poets who believe in the resurrection of literature. There once was a Golden Age, a Silver Age, and perhaps even a Bronze Age of poetry. But today we inarguably live in the Ice Age. Contemporary poets bang words together in hopes of making emotional fires. We think past these primitive methods. It is time for the Age of Wooden Poetry, where rivers of words flow restless and cold, and where rhyme mountains tower above the soft meadows of meaning. The music of the future has already been played long ago and forgotten. We are the ones to revive it.'
       }
     ],
     quote: 'block block block I am writer Blok.',
@@ -60,15 +68,19 @@ const content = {
     sections: [
       {
         title: 'Наша миссия',
-        content: 'Идеи — это безжизненные останки. Слова — это гроб. В мире, где оригинальное рождается лишь для того, чтобы быть забытым, должно существовать место, где идеи могут упокоиться. Наша миссия — предоставить свободный, доступный, многоязычный архив для всех, кто любит писать. Оставьте свои работы у нас и возвращайтесь в любое время, чтобы навестить их. Открывайте произведения других авторов — талантливых и не очень. Имеет ли это значение в конце концов? Всё это лишь эксперимент.'
+        content: 'Идеи — это безжизненные останки. Слова — это гроб. В мире, где оригинальное рождается лишь для того, чтобы быть забытым, должно существовать место, где идеи могут упокоиться. Наша миссия — предоставить свободный, доступный, многоязычный архив для всех, кто любит писать. Оставьте свои работы у нас и возвращайтесь в любое время, чтобы навестить их. Открывайте произведения других авторов — талантливых и не очень. Есть ли во всём этом смысл? Всё это лишь эксперимент.'
       },
       {
         title: 'Название',
-        content: 'Кадавер — немецкое написание слова «кадавр», труп, особенно предназначенный для вскрытия. Идея родилась в Гамбурге как ответ на удручающий факт: большинство поэтов, издателей, литературных журналов и обществ мертвы. Мы живём в мире, где глубокие мысли, неудобные идеи и экспериментальные подходы погребаются под культурой массового потребления. Что ж, мы это понимаем. Тем не менее должен найтись тот, кто раскопает могилы, которые никто не навещает, произносит надгробные речи, которые никто не придёт услышать, и устроит скромные поминки, где усопшего никто даже не вспомнит.'
+        content: 'Кадавер — немецкое написание слова «кадавр», труп, особенно предназначенный для вскрытия. Идея родилась в Гамбурге как ответ на удручающий факт: большинство поэтов, издателей, литературных журналов и обществ мертвы. Мы живём в мире, где глубокие мысли, неудобные идеи и экспериментальные подходы погребаются под культурой массового потребления. Что ж, понятное дело. Тем не менее должен быть кто-то, кто выроет могилы, которые никто не навестит, произнесёт надгробные речи, которые никто не услышит, и устроит скромные поминки, где усопшего никто даже не вспомнит.'
       },
       {
         title: 'Для авторов',
-        content: 'Кадавер открыт для всех, кто хочет поделиться своими работами. Никаких заранее заданных тем, никаких алгоритмов и никакой цензуры — мы стараемся дать самый нефильтрованный читательский опыт из возможных. Вы можете быть состоявшимся писателем, восходящим талантом или полным неудачником — нам всё равно. У нас есть лишь одна (угасающая) надежда: если достаточно авторов соберётся в едкий и булькающий бульон из слов и идей, возможно — только возможно — материала хватит, чтобы напечатать и издать.'
+        content: 'Кадавер открыт для всех, кто хочет поделиться своими работами. Никаких заранее заданных тем, никаких алгоритмов и никакой цензуры — мы стараемся дать самый нефильтрованный читательский опыт из возможных. Вы можете быть состоявшимся писателем, восходящим талантом или полным неудачником — нам всё равно. У нас есть лишь одна (угасающая) надежда: если достаточно авторов соберётся в едкий и булькающий бульон из слов и идей, быть может материала хватит, чтобы напечатать и издать.'
+      },
+      {
+        title: 'Основатели',
+        content: 'Мы — festum taxi et pluma, небольшая группа поэтов, верящих в воскресение литературы. Был Колый век, был Серебряный век и, быть может, даже Бронзовый век поэзии. Но сегодня мы бесспорно живём в ледниковом периоде. Современные поэты стучат слова друг о друга, надеясь разжечь эмоциональный огонь. Мы думаем дальше этих примитивных методов. Настало время Деревянной поэзии — где реки слов текут беспокойно и холодно, а горы рифм возвышаются над мягкими лугами смысла. Музыка будущего уже давно была сыграна и забыта. Мы — те, кто её возродит.'
       }
     ],
     quote: 'Блок-блок-блок-блок-блок. Я писатель Блок.',
@@ -90,6 +102,10 @@ const content = {
       {
         title: 'Для авторів',
         content: 'Кадавер відкритий для всіх, хто бажає поділитися своїми творами. Жодних наперед заданих тем, жодних алгоритмів і жодної цензури — ми прагнемо забезпечити найбільш неопосередкований читацький досвід з усіх можливих. Ви можете бути визнаним письменником, талантом-початківцем чи повним невдахою — нам байдуже. У нас є лише одна (зменшувана) надія: якщо достатньо авторів зібреться в їдкому і киплячому бульйоні зі слів та ідей, можливо — тільки можливо — матеріалу вистачить, щоб його надрукувати та видати.'
+      },
+      {
+        title: 'Засновники',
+        content: 'Ми — festum taxi et pluma, невелика група поетів, які вірять у воскресіння літератури. Колись існував Золотий вік, Срібний вік і, можливо, навіть Бронзовий вік поезії. Але сьогодні ми безсперечно живемо в Крижаному віку. Сучасні поети б\'ють слова одне об одне, сподіваючись розпалити емоційні вогнища. Ми думаємо поза цими примітивними методами. Настав час Дерев\'яної поезії — де ріки слів течуть неспокійно й холодно, а гори рим височаються над м\'якими луками смислу. Музика майбутнього вже давно була зіграна і забута. Ми — ті, хто її воскресить.'
       }
     ],
     quote: 'Блок-блок-блок-блок-блок. Я письменник Блок.',
