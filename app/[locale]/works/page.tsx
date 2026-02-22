@@ -81,10 +81,10 @@ export default function WorksPage({ params: { locale } }: WorksPageProps) {
   }
 
   const pageSubtitle = {
-    de: 'Eine Sammlung von literarischen Werken in drei Sprachen',
-    en: 'A collection of literary works in three tongues',
-    ru: 'Коллекция литературных произведений на трех языках',
-    uk: 'Збірка літературних творів кількома мовами'
+    de: 'Eine Sammlung literarischer Werke',
+    en: 'A collection of literary works',
+    ru: 'Коллекция литературных произведений',
+    uk: 'Збірка літературних творів'
   }
 
   if (!dictionary) {
