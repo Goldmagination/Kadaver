@@ -6,6 +6,7 @@ import { gsap } from 'gsap'
 import type { Locale } from '@/i18n.config'
 import Link from 'next/link'
 import ChapterEditor from '@/components/works/ChapterEditor'
+import TagInput from '@/components/ui/TagInput'
 import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
 
@@ -340,19 +341,20 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
             {/* Tags */}
             <div className="group">
               <label
-                htmlFor="tags"
                 className="block text-lg font-serif font-bold text-ink-black mb-2"
               >
                 {dictionary.submit.form.tags}
               </label>
-              <input
-                type="text"
-                id="tags"
-                name="tags"
+              <TagInput
                 value={formData.tags}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-transparent border-b-2 border-ink-black/30 focus:border-blood-red outline-none transition-colors font-sans text-ink-black"
-                placeholder={locale === 'de' ? 'liebe, natur, zeit' : locale === 'ru' ? 'любовь, природа, время' : 'love, nature, time'}
+                onChange={(val) => setFormData((prev) => ({ ...prev, tags: val }))}
+                locale={locale}
+                placeholder={
+                  locale === 'de' ? 'liebe, natur, zeit' :
+                    locale === 'ru' ? 'любовь, природа, время' :
+                      locale === 'uk' ? 'кохання, природа, час' :
+                        'love, nature, time'
+                }
               />
             </div>
 
