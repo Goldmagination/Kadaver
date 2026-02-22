@@ -6,6 +6,7 @@ import Navigation from '@/components/navigation/Navigation'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 import WorkReader from '@/components/works/WorkReader'
+import ViewCounter from '@/components/works/ViewCounter'
 
 interface WorkPageProps {
   params: {
@@ -60,9 +61,12 @@ export default async function WorkPage({ params: { locale, slug } }: WorkPagePro
         <div className="absolute inset-0 bg-gradient-to-b from-paper via-paper/95 to-paper/90" />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <span className="inline-block px-3 py-1 text-xs font-mono text-ink-black/60 uppercase mb-4 border border-ink-black/20">
-            {work.language}
-          </span>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className="inline-block px-3 py-1 text-xs font-mono text-ink-black/60 uppercase border border-ink-black/20">
+              {work.language}
+            </span>
+            <ViewCounter slug={work.slug} initialCount={work.viewCount} />
+          </div>
 
           <h1 className="text-4xl md:text-6xl font-serif font-bold text-ink-black mb-6">
             {work.title}
