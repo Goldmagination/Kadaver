@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import type { Locale } from '@/i18n.config'
@@ -37,9 +38,8 @@ export default function Navigation({ locale, dictionary }: NavigationProps) {
   return (
     <>
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-paper/90 backdrop-blur-md shadow-lg' : 'bg-transparent'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-paper/90 backdrop-blur-md shadow-lg' : 'bg-transparent'
+          }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -47,11 +47,18 @@ export default function Navigation({ locale, dictionary }: NavigationProps) {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
             <Link href={`/${locale}`}>
-              <motion.div 
+              <motion.div
                 className="flex items-center space-x-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
+                <Image
+                  src="/logo.png"
+                  alt="Kadaver"
+                  width={36}
+                  height={36}
+                  className="h-8 w-auto"
+                />
                 <h1 className="text-2xl font-serif font-bold text-ink-black">
                   {dictionary.common.title}
                 </h1>
@@ -72,9 +79,8 @@ export default function Navigation({ locale, dictionary }: NavigationProps) {
                 >
                   <Link
                     href={item.href}
-                    className={`text-sm font-medium transition-colors hover:text-blood-red ${
-                      pathname === item.href ? 'text-blood-red' : 'text-ink-black'
-                    }`}
+                    className={`text-sm font-medium transition-colors hover:text-blood-red ${pathname === item.href ? 'text-blood-red' : 'text-ink-black'
+                      }`}
                   >
                     {item.label}
                   </Link>
