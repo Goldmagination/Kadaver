@@ -1,9 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/db'
 
+// Helper to securely check if the request is authorized
+function isAuthorized(request: NextRequest): boolean {
+  // 1. Check if the user is authenticated via admin_token cookie
+  const adminToken = cookies().get('admin_token')
+  const isAuthed = adminToken?.value === 'authorized'
+
+  // 2. Check if the request comes from localhost
+  const ip = request.ip || request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const cleanIp = ip.split(',')[0].trim().replace(/^::ffff:/, '')
+  
+  // Empty IP in some Next.js local dev setups can happen, but we ensure it matches local patterns
+  const isLocalIp = cleanIp === '::1' || cleanIp === '127.0.0.1' || cleanIp === 'localhost' || cleanIp === ''
+
+  return isAuthed && isLocalIp
+}
+
 // GET - Fetch all submissions
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    if (!isAuthorized(request)) {
+      return NextResponse.json({ error: 'Access denied: Unauthorized or not localhost' }, { status: 403 })
+    }
+
     const submissions = await prisma.submission.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -26,6 +47,10 @@ export async function GET() {
 // POST - Approve or reject a submission
 export async function POST(request: NextRequest) {
   try {
+    if (!isAuthorized(request)) {
+      return NextResponse.json({ error: 'Access denied: Unauthorized or not localhost' }, { status: 403 })
+    }
+
     const { submissionId, action, renderingConfig } = await request.json()
 
     if (!submissionId || !['approve', 'reject', 'delete'].includes(action)) {
