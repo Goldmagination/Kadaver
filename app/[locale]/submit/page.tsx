@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import type { Locale } from '@/i18n.config'
 import Link from 'next/link'
@@ -12,6 +12,13 @@ import Footer from '@/components/layout/Footer'
 
 interface SubmitPageProps {
   params: { locale: Locale }
+}
+
+interface WipNovel {
+  id: string
+  title: string
+  slug: string
+  _count: { chapters: number }
 }
 
 const languages = [
@@ -31,9 +38,17 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
     email: '',
     type: 'POEM',
     chapters: [] as any[], // Add chapters array
+    markAsInProgress: false,
+    isContinuation: false,
+    continuationOfWorkId: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  // WIP novel lookup state
+  const [wipNovels, setWipNovels] = useState<WipNovel[]>([])
+  const [wipLoading, setWipLoading] = useState(false)
+  const [wipLookupDone, setWipLookupDone] = useState(false)
 
   const headerRef = useRef<HTMLDivElement>(null)
 
@@ -61,6 +76,24 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  // Fetch WIP novels when email changes and type is NOVEL
+  const fetchWipNovels = async (email: string) => {
+    if (!email || formData.type !== 'NOVEL') return
+
+    setWipLoading(true)
+    setWipLookupDone(false)
+    try {
+      const res = await fetch(`/api/works/in-progress?email=${encodeURIComponent(email)}`)
+      const data = await res.json()
+      setWipNovels(data.works || [])
+    } catch {
+      setWipNovels([])
+    } finally {
+      setWipLoading(false)
+      setWipLookupDone(true)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,7 +124,12 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
         email: '',
         type: 'POEM',
         chapters: [],
+        markAsInProgress: false,
+        isContinuation: false,
+        continuationOfWorkId: '',
       })
+      setWipNovels([])
+      setWipLookupDone(false)
     } catch {
       setSubmitStatus('error')
     } finally {
@@ -195,6 +233,14 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
               <li className="flex items-start">
                 <span className="text-blood-red mr-3 text-xl">&#10033;</span>
                 <span>
+                  {locale === 'de' && 'Romane können kapitelweise eingereicht und fortgesetzt werden.'}
+                  {locale === 'en' && 'Novels can be submitted chapter by chapter and continued over time.'}
+                  {locale === 'ru' && 'Романы можно присылать по главам и продолжать со временем.'}
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blood-red mr-3 text-xl">&#10033;</span>
+                <span>
                   {locale === 'de' && 'Wir werden Sie innerhalb von 7 Tagen kontaktieren.'}
                   {locale === 'en' && 'We will contact you within 7 days.'}
                   {locale === 'ru' && 'Мы свяжемся с вами в течение 7 дней.'}
@@ -269,7 +315,20 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
                 id="type"
                 name="type"
                 value={formData.type || 'POEM'}
-                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
+                onChange={(e) => {
+                  const newType = e.target.value
+                  setFormData(prev => ({
+                    ...prev,
+                    type: newType as any,
+                    // Reset continuation state when changing type
+                    isContinuation: false,
+                    continuationOfWorkId: '',
+                    markAsInProgress: newType === 'NOVEL' ? true : false,
+                  }))
+                  // Reset WIP lookup
+                  setWipNovels([])
+                  setWipLookupDone(false)
+                }}
                 className="w-full px-4 py-3 bg-paper border-b-2 border-ink-black/30 focus:border-blood-red outline-none transition-colors font-sans text-ink-black cursor-pointer"
               >
                 <option value="POEM">{locale === 'de' ? 'Gedicht' : locale === 'ru' ? 'Стихотворение' : 'Poem'}</option>
@@ -300,6 +359,128 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
                 ))}
               </select>
             </div>
+
+            {/* Email - moved up for novel continuation flow */}
+            <div className="group">
+              <label
+                htmlFor="email"
+                className="block text-lg font-serif font-bold text-ink-black mb-2"
+              >
+                {dictionary.submit.form.email}
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={() => {
+                  if (formData.type === 'NOVEL' && formData.email) {
+                    fetchWipNovels(formData.email)
+                  }
+                }}
+                required
+                className="w-full px-4 py-3 bg-transparent border-b-2 border-ink-black/30 focus:border-blood-red outline-none transition-colors font-sans text-ink-black"
+                placeholder={locale === 'de' ? 'ihre@email.de' : locale === 'ru' ? 'ваш@email.ru' : 'your@email.com'}
+              />
+            </div>
+
+            {/* Novel-specific: In Progress + Continuation */}
+            {formData.type === 'NOVEL' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-6"
+              >
+                {/* Continue Existing Novel Section */}
+                {formData.email && (
+                  <div className="brutalist-border bg-ink-black/5 p-6">
+                    <div className="flex items-center mb-4">
+                      <input
+                        type="checkbox"
+                        id="isContinuation"
+                        checked={formData.isContinuation}
+                        onChange={(e) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            isContinuation: e.target.checked,
+                            continuationOfWorkId: e.target.checked ? prev.continuationOfWorkId : '',
+                          }))
+                          if (e.target.checked && !wipLookupDone) {
+                            fetchWipNovels(formData.email)
+                          }
+                        }}
+                        className="w-5 h-5 mr-3 accent-blood-red cursor-pointer"
+                      />
+                      <label htmlFor="isContinuation" className="font-serif font-bold text-ink-black cursor-pointer">
+                        {dictionary.submit.form.continueNovel}
+                      </label>
+                    </div>
+
+                    <AnimatePresence>
+                      {formData.isContinuation && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="ml-8"
+                        >
+                          {wipLoading ? (
+                            <p className="text-ink-black/50 font-sans text-sm italic">
+                              {dictionary.submit.form.loadingNovels}
+                            </p>
+                          ) : wipNovels.length > 0 ? (
+                            <div>
+                              <select
+                                value={formData.continuationOfWorkId}
+                                onChange={(e) => setFormData(prev => ({ ...prev, continuationOfWorkId: e.target.value }))}
+                                className="w-full px-4 py-3 bg-paper border-b-2 border-ink-black/30 focus:border-blood-red outline-none transition-colors font-sans text-ink-black cursor-pointer mb-2"
+                              >
+                                <option value="">{dictionary.submit.form.selectNovel}</option>
+                                {wipNovels.map(novel => (
+                                  <option key={novel.id} value={novel.id}>
+                                    {novel.title} ({novel._count.chapters} {locale === 'de' ? 'Kapitel' : locale === 'ru' ? 'глав' : 'chapters'})
+                                  </option>
+                                ))}
+                              </select>
+                              <p className="text-xs text-ink-black/50 font-sans mt-1">
+                                {dictionary.submit.form.continuationNote}
+                              </p>
+                            </div>
+                          ) : wipLookupDone ? (
+                            <p className="text-ink-black/50 font-sans text-sm italic">
+                              {dictionary.submit.form.noWipNovels}
+                            </p>
+                          ) : null}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {/* Mark as In Progress */}
+                {!formData.isContinuation && (
+                  <div className="flex items-center p-4 bg-gold-leaf/10 border-l-4 border-gold-leaf">
+                    <input
+                      type="checkbox"
+                      id="markAsInProgress"
+                      checked={formData.markAsInProgress}
+                      onChange={(e) => setFormData(prev => ({ ...prev, markAsInProgress: e.target.checked }))}
+                      className="w-5 h-5 mr-3 accent-blood-red cursor-pointer"
+                    />
+                    <div>
+                      <label htmlFor="markAsInProgress" className="font-serif font-bold text-ink-black cursor-pointer block">
+                        {dictionary.submit.form.novelInProgress}
+                      </label>
+                      <span className="text-xs text-ink-black/50 font-sans">
+                        {dictionary.submit.form.novelInProgressHint}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
 
             {/* Content or Chapter Editor */}
             {formData.type === 'NOVEL' ? (
@@ -355,26 +536,6 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
                       locale === 'uk' ? 'кохання, природа, час' :
                         'love, nature, time'
                 }
-              />
-            </div>
-
-            {/* Email */}
-            <div className="group">
-              <label
-                htmlFor="email"
-                className="block text-lg font-serif font-bold text-ink-black mb-2"
-              >
-                {dictionary.submit.form.email}
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 bg-transparent border-b-2 border-ink-black/30 focus:border-blood-red outline-none transition-colors font-sans text-ink-black"
-                placeholder={locale === 'de' ? 'ihre@email.de' : locale === 'ru' ? 'ваш@email.ru' : 'your@email.com'}
               />
             </div>
 

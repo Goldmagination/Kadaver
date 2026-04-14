@@ -23,7 +23,10 @@ async function getOrCreateAnonymousUser(email: string) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { title, author, language, content, tags, email, type, chapters } = body
+    const {
+      title, author, language, content, tags, email, type, chapters,
+      isContinuation, continuationOfWorkId, markAsInProgress
+    } = body
 
     // Validate required fields
     // For NOVELs, content comes from chapters. For others, content string is required.
@@ -60,6 +63,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // If it's a continuation, validate that the target work exists and is IN_PROGRESS
+    if (isContinuation && continuationOfWorkId) {
+      const targetWork = await prisma.work.findUnique({
+        where: { id: continuationOfWorkId }
+      })
+
+      if (!targetWork || targetWork.type !== 'NOVEL' || targetWork.status !== 'IN_PROGRESS') {
+        return NextResponse.json(
+          { error: 'Target novel not found or is not in progress' },
+          { status: 400 }
+        )
+      }
+    }
+
     try {
       // Get or create user by email
       const user = await getOrCreateAnonymousUser(email)
@@ -67,23 +84,27 @@ export async function POST(request: NextRequest) {
       // Create the submission
       const submission = await prisma.submission.create({
         data: {
-          title,
+          title: isContinuation ? `[CONTINUATION] ${title}` : title,
           authorName: author,
           language: language.toLowerCase() as 'de' | 'en' | 'ru',
           content: content || (isNovel ? 'NOVEL SUBMISSION (See Chapters)' : ''),
           type: type || 'POEM', // Default to POEM if not specified
           chapters: (isNovel && chapters) ? chapters : undefined,
+          isContinuation: isContinuation || false,
+          continuationOfWorkId: isContinuation ? continuationOfWorkId : null,
           submitterId: user.id,
           status: 'PENDING',
         },
       })
 
-      console.log('Submission created:', submission.id)
+      console.log('Submission created:', submission.id, isContinuation ? '(continuation)' : '')
 
       return NextResponse.json(
         {
           success: true,
-          message: 'Work submitted successfully',
+          message: isContinuation
+            ? 'Continuation chapters submitted successfully'
+            : 'Work submitted successfully',
           id: submission.id
         },
         { status: 201 }

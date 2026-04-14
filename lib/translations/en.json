@@ -54,7 +54,9 @@
     "readLess": "Read less",
     "listenTo": "Listen",
     "share": "Share",
-    "by": "by"
+    "by": "by",
+    "inProgress": "Work in Progress",
+    "toBeContinued": "To be continued..."
   },
   "submit": {
     "title": "Submit Your Work",
@@ -68,7 +70,14 @@
       "email": "Contact Email",
       "submit": "Submit Work",
       "success": "Your work has been submitted successfully",
-      "error": "Failed to submit work. Please try again."
+      "error": "Failed to submit work. Please try again.",
+      "novelInProgress": "This novel is still in progress",
+      "novelInProgressHint": "You can submit more chapters later",
+      "continueNovel": "Continue an existing novel",
+      "selectNovel": "Select a novel to continue",
+      "noWipNovels": "No in-progress novels found for this email",
+      "loadingNovels": "Loading your novels...",
+      "continuationNote": "New chapters will be appended to the selected novel"
     }
   },
   "footer": {

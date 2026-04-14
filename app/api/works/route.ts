@@ -16,7 +16,15 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { publishedAt: 'desc' },
       take: limit,
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        content: true,
+        excerpt: true,
+        language: true,
+        type: true,
+        status: true,
         author: {
           select: { name: true, slug: true }
         },

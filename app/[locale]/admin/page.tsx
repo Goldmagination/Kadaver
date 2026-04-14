@@ -23,6 +23,8 @@ interface Submission {
   language: string
   status: string
   type: string
+  isContinuation: boolean
+  continuationOfWorkId: string | null
   createdAt: string
   submitter: {
     email: string
@@ -42,6 +44,9 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
 
   // Store rendering config for each submission being reviewed
   const [configs, setConfigs] = useState<Record<string, RenderingConfig>>({})
+
+  // Store work status choice for novel submissions
+  const [workStatuses, setWorkStatuses] = useState<Record<string, 'IN_PROGRESS' | 'COMPLETED'>>({})
 
   useEffect(() => {
     // Check if running locally
@@ -79,8 +84,9 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
         body: JSON.stringify({
           submissionId,
           action,
-          // If action is approve, send the config
-          renderingConfig: action === 'approve' ? (configs[submissionId] || undefined) : undefined
+          // If action is approve, send the config and work status
+          renderingConfig: action === 'approve' ? (configs[submissionId] || undefined) : undefined,
+          workStatus: action === 'approve' ? (workStatuses[submissionId] || 'COMPLETED') : undefined,
         }),
       })
 
@@ -187,13 +193,28 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
                         by {submission.authorName} • {submission.language.toUpperCase()} • {submission.submitter?.email} <span className="ml-2 font-mono text-blood-red">[{submission.type}]</span>
                       </p>
                     </div>
-                    <span className={`px-3 py-1 text-xs font-mono uppercase ${submission.status === 'PENDING' ? 'bg-gold-leaf/20 text-ink-black' :
-                      submission.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                        'bg-blood-red/20 text-blood-red'
-                      }`}>
-                      {submission.status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {/* Continuation badge */}
+                      {submission.isContinuation && (
+                        <span className="px-3 py-1 text-xs font-mono uppercase bg-blue-100 text-blue-800 border border-blue-300">
+                          CONTINUATION
+                        </span>
+                      )}
+                      <span className={`px-3 py-1 text-xs font-mono uppercase ${submission.status === 'PENDING' ? 'bg-gold-leaf/20 text-ink-black' :
+                        submission.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                          'bg-blood-red/20 text-blood-red'
+                        }`}>
+                        {submission.status}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Continuation info */}
+                  {submission.isContinuation && submission.continuationOfWorkId && (
+                    <div className="mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-sm font-sans text-blue-800">
+                      📎 This is a <strong>continuation</strong> of an existing novel. Approving will append the new chapters to work ID: <code className="bg-blue-100 px-1 rounded">{submission.continuationOfWorkId}</code>
+                    </div>
+                  )}
 
                   <pre className="font-serif text-ink-black/80 whitespace-pre-wrap mb-6 p-4 bg-ink-black/5 rounded">
                     {submission.content || '[Content rendering pending]'}
@@ -205,7 +226,50 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
                     </span>
 
                     {submission.status === 'PENDING' && (
-                      <div className="mt-6 border-t border-ink-black/10 pt-4">
+                      <div className="mt-6 border-t border-ink-black/10 pt-4 w-full">
+                        {/* Novel status selector */}
+                        {submission.type === 'NOVEL' && (
+                          <div className="mb-4 p-4 bg-gold-leaf/10 border border-gold-leaf/30">
+                            <label className="text-sm font-bold text-ink-black mb-2 block font-sans">
+                              Novel Status on Publish:
+                            </label>
+                            <div className="flex gap-4">
+                              <label className={cn(
+                                "flex items-center gap-2 px-4 py-2 cursor-pointer transition-colors border",
+                                (workStatuses[submission.id] || 'COMPLETED') === 'IN_PROGRESS'
+                                  ? "bg-gold-leaf/20 border-gold-leaf text-ink-black font-bold"
+                                  : "bg-paper border-ink-black/10 text-ink-black/60"
+                              )}>
+                                <input
+                                  type="radio"
+                                  name={`status-${submission.id}`}
+                                  value="IN_PROGRESS"
+                                  checked={(workStatuses[submission.id] || 'COMPLETED') === 'IN_PROGRESS'}
+                                  onChange={() => setWorkStatuses(prev => ({ ...prev, [submission.id]: 'IN_PROGRESS' }))}
+                                  className="accent-blood-red"
+                                />
+                                <span className="text-sm font-sans">🔄 In Progress</span>
+                              </label>
+                              <label className={cn(
+                                "flex items-center gap-2 px-4 py-2 cursor-pointer transition-colors border",
+                                (workStatuses[submission.id] || 'COMPLETED') === 'COMPLETED'
+                                  ? "bg-green-100 border-green-400 text-ink-black font-bold"
+                                  : "bg-paper border-ink-black/10 text-ink-black/60"
+                              )}>
+                                <input
+                                  type="radio"
+                                  name={`status-${submission.id}`}
+                                  value="COMPLETED"
+                                  checked={(workStatuses[submission.id] || 'COMPLETED') === 'COMPLETED'}
+                                  onChange={() => setWorkStatuses(prev => ({ ...prev, [submission.id]: 'COMPLETED' }))}
+                                  className="accent-blood-red"
+                                />
+                                <span className="text-sm font-sans">✅ Completed</span>
+                              </label>
+                            </div>
+                          </div>
+                        )}
+
                         <details className="group/details mb-4">
                           <summary className="cursor-pointer text-sm font-bold text-ink-black/70 hover:text-blood-red transition-colors flex items-center select-none">
                             <span className="mr-2">Typesetter Settings</span>
@@ -311,7 +375,11 @@ export default function AdminPage({ params: { locale } }: AdminPageProps) {
                             disabled={actionLoading === submission.id}
                             className="px-4 py-2 bg-ink-black text-paper hover:bg-green-700 transition-colors disabled:opacity-50 font-bold"
                           >
-                            {actionLoading === submission.id ? 'Publishing...' : 'Approve & Publish'}
+                            {actionLoading === submission.id
+                              ? 'Publishing...'
+                              : submission.isContinuation
+                                ? 'Approve & Append Chapters'
+                                : 'Approve & Publish'}
                           </button>
                         </div>
                       </div>

@@ -54,7 +54,9 @@
     "readLess": "Weniger lesen",
     "listenTo": "Anhören",
     "share": "Teilen",
-    "by": "von"
+    "by": "von",
+    "inProgress": "In Arbeit",
+    "toBeContinued": "Fortsetzung folgt..."
   },
   "submit": {
     "title": "Reichen Sie Ihr Werk ein",
@@ -68,7 +70,14 @@
       "email": "Kontakt-E-Mail",
       "submit": "Werk einreichen",
       "success": "Ihr Werk wurde erfolgreich eingereicht",
-      "error": "Fehler beim Einreichen des Werks. Bitte versuchen Sie es erneut."
+      "error": "Fehler beim Einreichen des Werks. Bitte versuchen Sie es erneut.",
+      "novelInProgress": "Dieser Roman ist noch in Arbeit",
+      "novelInProgressHint": "Sie können später weitere Kapitel einreichen",
+      "continueNovel": "Bestehenden Roman fortsetzen",
+      "selectNovel": "Roman zum Fortsetzen auswählen",
+      "noWipNovels": "Keine Romane in Arbeit für diese E-Mail gefunden",
+      "loadingNovels": "Ihre Romane werden geladen...",
+      "continuationNote": "Neue Kapitel werden an den ausgewählten Roman angehängt"
     }
   },
   "footer": {

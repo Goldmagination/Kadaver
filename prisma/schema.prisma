@@ -34,6 +34,11 @@ enum WorkType {
   NOVEL
 }
 
+enum WorkStatus {
+  IN_PROGRESS // Novel is being written, more chapters coming
+  COMPLETED   // Work is finished
+}
+
 // ============================================
 // USER & AUTHENTICATION
 // ============================================
@@ -162,6 +167,9 @@ model Work {
   // Stores JSON config: { font: "Playfair", align: "center", spacing: "relaxed", dropCap: boolean, etc. }
   renderingConfig Json?
 
+  // Work status (for serialized novels)
+  status        WorkStatus @default(COMPLETED)
+
   // Publishing
   published     Boolean   @default(false)
   featured      Boolean   @default(false)
@@ -276,6 +284,10 @@ model Submission {
   // Submitter
   submitterId   String
   submitter     User             @relation(fields: [submitterId], references: [id], onDelete: Cascade)
+
+  // Continuation of existing novel
+  isContinuation       Boolean  @default(false)
+  continuationOfWorkId String?
 
   // Review status
   status        SubmissionStatus @default(PENDING)

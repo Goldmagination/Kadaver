@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Access denied: Unauthorized or not localhost' }, { status: 403 })
     }
 
-    const { submissionId, action, renderingConfig } = await request.json()
+    const { submissionId, action, renderingConfig, workStatus } = await request.json()
 
     if (!submissionId || !['approve', 'reject', 'delete'].includes(action)) {
       return NextResponse.json(
@@ -101,108 +101,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Submission deleted' })
     }
 
-    // Approve: Create an author (if needed) and work, then update submission
+    // ============================================
+    // APPROVE FLOW
+    // ============================================
 
-    // First, check if we need to create an author or find existing
-    let author = await prisma.author.findFirst({
-      where: { name: submission.authorName }
-    })
-
-    if (!author) {
-      // Create a new author
-      const slug = submission.authorName
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim()
-
-      author = await prisma.author.create({
-        data: {
-          name: submission.authorName,
-          slug: `${slug}-${Date.now()}`,
-          languages: [submission.language],
-        }
-      })
+    // Check if this is a continuation of an existing novel
+    if (submission.isContinuation && submission.continuationOfWorkId) {
+      return handleContinuationApproval(submission, workStatus)
     }
 
-    // Create the work
-    const workSlug = submission.title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
-
-    // Prepare content for Work record
-    let finalContent: string | null = submission.content
-    let excerpt = undefined
-
-    const subChapters = (submission as any).chapters
-    if (submission.type === 'NOVEL' && subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
-      // For novels, we don't want the placeholder in the main content.
-      // We can either leave it empty or put the first chapter's content.
-      // Let's set the main content to null (as per schema comment) and use first chapter for excerpt.
-      finalContent = null
-
-      // Generate excerpt from first chapter
-      const firstChapter = subChapters[0]
-      if (firstChapter && firstChapter.content) {
-        excerpt = firstChapter.content.substring(0, 300) + '...'
-      }
-    } else {
-      // For poems/tales, generate excerpt from content
-      if (submission.content) {
-        excerpt = submission.content.substring(0, 300) + '...'
-      }
-    }
-
-    const work = await prisma.work.create({
-      data: {
-        title: submission.title,
-        content: finalContent,
-        excerpt: excerpt,
-        slug: `${workSlug}-${Date.now()}`,
-        language: submission.language,
-        authorId: author.id,
-        published: true,
-        publishedAt: new Date(),
-        type: submission.type || 'POEM',
-        renderingConfig: renderingConfig || undefined,
-      }
-    })
-
-    // Create chapters if they exist
-    if (subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
-      const chaptersData = subChapters.map((chapter: any, index: number) => ({
-        workId: work.id,
-        order: index + 1,
-        title: chapter.title || `Chapter ${index + 1}`,
-        content: chapter.content || '',
-      }))
-
-      await prisma.chapter.createMany({
-        data: chaptersData
-      })
-    }
-
-    // Update the submission
-    await prisma.submission.update({
-      where: { id: submissionId },
-      data: {
-        status: 'APPROVED',
-        reviewedAt: new Date(),
-        approvedWorkId: work.id
-      }
-    })
-
-    console.log('Work published:', work.id)
-
-    return NextResponse.json({
-      success: true,
-      message: 'Work published successfully',
-      workId: work.id
-    })
+    // Regular approval: Create an author (if needed) and work
+    return handleNewWorkApproval(submission, renderingConfig, workStatus)
 
   } catch (error) {
     console.error('Failed to process submission:', error)
@@ -211,4 +120,188 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+// Handle approval of a continuation submission (append chapters to existing work)
+async function handleContinuationApproval(
+  submission: any,
+  workStatus?: string
+) {
+  const targetWork = await prisma.work.findUnique({
+    where: { id: submission.continuationOfWorkId },
+    include: {
+      chapters: {
+        orderBy: { order: 'desc' },
+        take: 1,
+      }
+    }
+  })
+
+  if (!targetWork) {
+    return NextResponse.json(
+      { error: 'Target work for continuation not found' },
+      { status: 404 }
+    )
+  }
+
+  // Get the current highest chapter order
+  const lastOrder = targetWork.chapters.length > 0 ? targetWork.chapters[0].order : 0
+
+  // Parse the submitted chapters and append them
+  const subChapters = (submission as any).chapters
+  if (subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
+    const chaptersData = subChapters.map((chapter: any, index: number) => ({
+      workId: targetWork.id,
+      order: lastOrder + index + 1,
+      title: chapter.title || `Chapter ${lastOrder + index + 1}`,
+      content: chapter.content || '',
+    }))
+
+    await prisma.chapter.createMany({
+      data: chaptersData
+    })
+  }
+
+  // Update the work's status if specified (e.g., mark as COMPLETED)
+  const newStatus = workStatus === 'COMPLETED' ? 'COMPLETED' : targetWork.status
+  await prisma.work.update({
+    where: { id: targetWork.id },
+    data: {
+      status: newStatus as any,
+      updatedAt: new Date(),
+    }
+  })
+
+  // Update the submission
+  await prisma.submission.update({
+    where: { id: submission.id },
+    data: {
+      status: 'APPROVED',
+      reviewedAt: new Date(),
+      approvedWorkId: targetWork.id,
+    }
+  })
+
+  console.log('Continuation approved:', submission.id, '→ Work:', targetWork.id)
+
+  return NextResponse.json({
+    success: true,
+    message: `Chapters appended to "${targetWork.title}" successfully`,
+    workId: targetWork.id,
+  })
+}
+
+// Handle approval of a new work submission
+async function handleNewWorkApproval(
+  submission: any,
+  renderingConfig?: any,
+  workStatus?: string
+) {
+  // First, check if we need to create an author or find existing
+  let author = await prisma.author.findFirst({
+    where: { name: submission.authorName }
+  })
+
+  if (!author) {
+    // Create a new author
+    const slug = submission.authorName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim()
+
+    author = await prisma.author.create({
+      data: {
+        name: submission.authorName,
+        slug: `${slug}-${Date.now()}`,
+        languages: [submission.language],
+      }
+    })
+  }
+
+  // Create the work
+  const workSlug = submission.title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim()
+
+  // Prepare content for Work record
+  let finalContent: string | null = submission.content
+  let excerpt = undefined
+
+  const subChapters = (submission as any).chapters
+  if (submission.type === 'NOVEL' && subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
+    // For novels, we don't want the placeholder in the main content.
+    finalContent = null
+
+    // Generate excerpt from first chapter
+    const firstChapter = subChapters[0]
+    if (firstChapter && firstChapter.content) {
+      excerpt = firstChapter.content.substring(0, 300) + '...'
+    }
+  } else {
+    // For poems/tales, generate excerpt from content
+    if (submission.content) {
+      excerpt = submission.content.substring(0, 300) + '...'
+    }
+  }
+
+  // Determine the work status
+  // For novels, admin can choose IN_PROGRESS or COMPLETED
+  // For non-novels, always COMPLETED
+  let finalStatus: 'IN_PROGRESS' | 'COMPLETED' = 'COMPLETED'
+  if (submission.type === 'NOVEL' && workStatus === 'IN_PROGRESS') {
+    finalStatus = 'IN_PROGRESS'
+  }
+
+  const work = await prisma.work.create({
+    data: {
+      title: submission.title,
+      content: finalContent,
+      excerpt: excerpt,
+      slug: `${workSlug}-${Date.now()}`,
+      language: submission.language,
+      authorId: author.id,
+      published: true,
+      publishedAt: new Date(),
+      type: submission.type || 'POEM',
+      status: finalStatus,
+      renderingConfig: renderingConfig || undefined,
+    }
+  })
+
+  // Create chapters if they exist
+  if (subChapters && Array.isArray(subChapters) && subChapters.length > 0) {
+    const chaptersData = subChapters.map((chapter: any, index: number) => ({
+      workId: work.id,
+      order: index + 1,
+      title: chapter.title || `Chapter ${index + 1}`,
+      content: chapter.content || '',
+    }))
+
+    await prisma.chapter.createMany({
+      data: chaptersData
+    })
+  }
+
+  // Update the submission
+  await prisma.submission.update({
+    where: { id: submission.id },
+    data: {
+      status: 'APPROVED',
+      reviewedAt: new Date(),
+      approvedWorkId: work.id
+    }
+  })
+
+  console.log('Work published:', work.id, 'Status:', finalStatus)
+
+  return NextResponse.json({
+    success: true,
+    message: 'Work published successfully',
+    workId: work.id
+  })
 }

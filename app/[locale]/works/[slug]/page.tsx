@@ -95,6 +95,29 @@ export default async function WorkPage({ params: { locale, slug } }: WorkPagePro
         </div>
       </section>
 
+      {/* Work in Progress Banner */}
+      {work.status === 'IN_PROGRESS' && (
+        <section className="px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gold-leaf/10 border-l-4 border-gold-leaf p-4 flex items-center gap-3">
+              <span className="text-2xl">📝</span>
+              <div>
+                <p className="font-serif font-bold text-ink-black">
+                  {locale === 'de' && 'In Arbeit'}
+                  {locale === 'en' && 'Work in Progress'}
+                  {locale === 'ru' && 'В процессе написания'}
+                </p>
+                <p className="text-sm text-ink-black/60 font-sans">
+                  {locale === 'de' && 'Dieses Werk wird noch fortgesetzt. Weitere Kapitel folgen.'}
+                  {locale === 'en' && 'This work is still being written. More chapters coming soon.'}
+                  {locale === 'ru' && 'Это произведение ещё пишется. Новые главы скоро появятся.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Work Content */}
       <section className="py-16 px-6">
         <div className="max-w-3xl mx-auto">

@@ -18,6 +18,7 @@ interface WorkReaderProps {
         title: string
         content: string | null
         type: 'POEM' | 'TALE' | 'NOVEL'
+        status?: string
         renderingConfig: RenderingConfig | unknown
         chapters: Chapter[]
     }
@@ -29,6 +30,8 @@ export default function WorkReader({ work, locale }: WorkReaderProps) {
 
     // If it's a novel with chapters, use chapter content
     const isNovel = work.type === 'NOVEL' && work.chapters.length > 0
+    const isWip = work.status === 'IN_PROGRESS'
+    const isLastChapter = activeChapterIndex === work.chapters.length - 1
 
     const contentToRender = isNovel
         ? work.chapters[activeChapterIndex].content
@@ -85,6 +88,25 @@ export default function WorkReader({ work, locale }: WorkReaderProps) {
                                 {locale === 'de' ? 'Nächstes Kapitel' : 'Next Chapter'} →
                             </button>
                         )}
+                    </div>
+                )}
+
+                {/* To be continued message for WIP novels on last chapter */}
+                {isNovel && isWip && isLastChapter && (
+                    <div className="mt-12 pt-8 border-t-2 border-dashed border-gold-leaf/40">
+                        <div className="text-center py-8">
+                            <span className="text-3xl mb-4 block">✍️</span>
+                            <p className="font-serif text-xl italic text-ink-black/60">
+                                {locale === 'de' ? 'Fortsetzung folgt...' :
+                                    locale === 'ru' ? 'Продолжение следует...' :
+                                        'To be continued...'}
+                            </p>
+                            <p className="text-sm text-ink-black/40 font-sans mt-2">
+                                {locale === 'de' ? 'Der Autor schreibt noch an diesem Werk' :
+                                    locale === 'ru' ? 'Автор продолжает работу над этим произведением' :
+                                        'The author is still working on this piece'}
+                            </p>
+                        </div>
                     </div>
                 )}
             </article>

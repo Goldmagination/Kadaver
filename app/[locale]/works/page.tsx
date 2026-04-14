@@ -18,6 +18,8 @@ interface Work {
   content: string | null
   excerpt: string | null
   language: string
+  type: string
+  status: string
   author: {
     name: string
   }
@@ -206,12 +208,26 @@ export default function WorksPage({ params: { locale } }: WorksPageProps) {
                       whileHover={{ y: -5, boxShadow: '8px 8px 0 var(--ink-black)' }}
                     >
                       <div className="flex items-start justify-between mb-4">
-                        <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
-                          {work.title}
-                        </h3>
-                        <span className="text-xs font-mono text-ink-black/50 uppercase">
-                          {work.language}
-                        </span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-2xl font-serif font-bold text-ink-black group-hover:text-blood-red transition-colors">
+                            {work.title}
+                          </h3>
+                          {work.status === 'IN_PROGRESS' && (
+                            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-gold-leaf/20 text-gold-leaf border border-gold-leaf/40 animate-pulse">
+                              {dictionary.works?.inProgress || 'WIP'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {work.type === 'NOVEL' && (
+                            <span className="text-xs font-mono text-blood-red/60 uppercase">
+                              {locale === 'de' ? 'Roman' : locale === 'ru' ? 'Роман' : 'Novel'}
+                            </span>
+                          )}
+                          <span className="text-xs font-mono text-ink-black/50 uppercase">
+                            {work.language}
+                          </span>
+                        </div>
                       </div>
 
                       <p className="text-sm text-ink-black/70 mb-4">
