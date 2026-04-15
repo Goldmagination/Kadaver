@@ -15,12 +15,19 @@ export default function ViewCounter({ slug, initialCount }: ViewCounterProps) {
         if (fired.current) return
         fired.current = true
 
+        // Client-side dedup: don't re-count views within the same session
+        const storageKey = `kadaver_viewed_${slug}`
+        try {
+            if (sessionStorage.getItem(storageKey)) return
+        } catch { /* sessionStorage may be unavailable */ }
+
         fetch(`/api/works/${slug}/view`, { method: 'PATCH' })
             .then((res) => res.json())
             .then((data) => {
                 if (typeof data.viewCount === 'number') {
                     setCount(data.viewCount)
                 }
+                try { sessionStorage.setItem(storageKey, '1') } catch {}
             })
             .catch(() => {/* silently fail */ })
     }, [slug])
