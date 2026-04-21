@@ -103,6 +103,19 @@ export default function ChapterEditor({ chapters, onChange, locale }: ChapterEdi
                         />
                     </div>
                     <div>
+                        <div className="flex justify-end mb-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const cleaned = activeChapter.content.replace(/\n\s*\n/g, '\n')
+                                    updateChapter(activeChapterIndex, 'content', cleaned)
+                                }}
+                                className="text-xs font-sans text-ink-black/60 hover:text-blood-red transition-colors"
+                                title="Use this if you pasted text and it has too many empty lines."
+                            >
+                                {locale === 'de' ? 'Leere Zeilen entfernen' : locale === 'ru' ? 'Удалить пустые строки' : 'Remove empty lines'}
+                            </button>
+                        </div>
                         <textarea
                             value={activeChapter.content}
                             onChange={(e) => updateChapter(activeChapterIndex, 'content', e.target.value)}

@@ -496,12 +496,25 @@ export default function SubmitPage({ params: { locale } }: SubmitPageProps) {
               </div>
             ) : (
               <div className="group">
-                <label
-                  htmlFor="content"
-                  className="block text-lg font-serif font-bold text-ink-black mb-2"
-                >
-                  {dictionary.submit.form.content}
-                </label>
+                <div className="flex justify-between items-end mb-2">
+                  <label
+                    htmlFor="content"
+                    className="block text-lg font-serif font-bold text-ink-black"
+                  >
+                    {dictionary.submit.form.content}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cleaned = formData.content.replace(/\n\s*\n/g, '\n')
+                      setFormData(prev => ({ ...prev, content: cleaned }))
+                    }}
+                    className="text-xs font-sans text-ink-black/60 hover:text-blood-red transition-colors mb-1"
+                    title={locale === 'de' ? 'Verwenden Sie dies, wenn Sie Text kopiert haben und er zu viele Leerzeilen enthält.' : locale === 'ru' ? 'Используйте, если вы скопировали текст и в нем слишком много пустых строк.' : 'Use this if you pasted text and it has too many empty lines.'}
+                  >
+                    {locale === 'de' ? 'Leere Zeilen entfernen' : locale === 'ru' ? 'Удалить пустые строки' : 'Remove empty lines'}
+                  </button>
+                </div>
                 <textarea
                   id="content"
                   name="content"
